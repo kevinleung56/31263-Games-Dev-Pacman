@@ -6,6 +6,7 @@ public class PlayerMovement : MonoBehaviour
 {
     public SpriteRenderer spriteRenderer;
     public Animator animatorController;
+    public GameObject player;
     // Start is called before the first frame update
     void Start()
     {
@@ -17,23 +18,33 @@ public class PlayerMovement : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
+            player.transform.rotation = Quaternion.identity;
             spriteRenderer.flipX = false;
             animatorController.SetBool("MoveLeftRightParam", true);
         }
         else if (Input.GetKeyDown(KeyCode.RightArrow))
         {
+            player.transform.rotation = Quaternion.identity;
             spriteRenderer.flipX = true;
             animatorController.SetBool("MoveLeftRightParam", true);
         }
         else if (Input.GetKeyDown(KeyCode.UpArrow))
         {
-            spriteRenderer.flipY = false;
+            player.transform.rotation = Quaternion.identity;
+            spriteRenderer.flipX = true;
+            player.transform.Rotate(new Vector3(0, 0, 90));
             animatorController.SetBool("MoveUpDownParam", true);
         }
         else if (Input.GetKeyDown(KeyCode.DownArrow))
         {
-            spriteRenderer.flipY = true;
+            player.transform.rotation = Quaternion.identity;
+            spriteRenderer.flipX = false;
+            player.transform.Rotate(new Vector3(0, 0, 90));
             animatorController.SetBool("MoveUpDownParam", true);
+        }
+        else if (Input.GetKeyDown(KeyCode.Space))
+        {
+            animatorController.SetBool("IsDeadParam", true);
         }
     }
 }
