@@ -53,7 +53,7 @@ AnimatorStateTransition:
   m_Name: 
   m_Conditions:
   - m_ConditionMode: 2
-    m_ConditionEvent: MoveUpDownParamB
+    m_ConditionEvent: MoveUpDownParam
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -5090859891259121495}
@@ -209,25 +209,13 @@ AnimatorController:
   m_Name: Pac-worm Animator
   serializedVersion: 5
   m_AnimatorParameters:
-  - m_Name: MoveLeftRightParam
-    m_Type: 9
-    m_DefaultFloat: 0
-    m_DefaultInt: 0
-    m_DefaultBool: 0
-    m_Controller: {fileID: 0}
   - m_Name: MoveUpDownParam
-    m_Type: 9
-    m_DefaultFloat: 0
-    m_DefaultInt: 0
-    m_DefaultBool: 0
-    m_Controller: {fileID: 0}
-  - m_Name: MoveUpDownParamB
     m_Type: 4
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
     m_Controller: {fileID: 0}
-  - m_Name: MoveLeftRightParamB
+  - m_Name: MoveLeftRightParam
     m_Type: 4
     m_DefaultFloat: 0
     m_DefaultInt: 0
@@ -255,7 +243,7 @@ AnimatorStateTransition:
   m_Name: 
   m_Conditions:
   - m_ConditionMode: 2
-    m_ConditionEvent: MoveLeftRightParamB
+    m_ConditionEvent: MoveLeftRightParam
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -5090859891259121495}
@@ -288,7 +276,7 @@ AnimatorStateMachine:
     m_Position: {x: 520, y: 60, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -2735728492161559663}
-    m_Position: {x: 270, y: 140, z: 0}
+    m_Position: {x: 270, y: 120, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -5090859891259121495}
     m_Position: {x: 270, y: 60, z: 0}
@@ -337,7 +325,7 @@ AnimatorStateTransition:
   m_Name: 
   m_Conditions:
   - m_ConditionMode: 1
-    m_ConditionEvent: MoveLeftRightParamB
+    m_ConditionEvent: MoveLeftRightParam
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -4841511306768866417}
@@ -362,7 +350,7 @@ AnimatorStateTransition:
   m_Name: 
   m_Conditions:
   - m_ConditionMode: 1
-    m_ConditionEvent: MoveUpDownParamB
+    m_ConditionEvent: MoveUpDownParam
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -2735728492161559663}

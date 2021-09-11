@@ -18,22 +18,22 @@ public class PlayerMovement : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
             spriteRenderer.flipX = false;
-            animatorController.SetBool("MoveLeftRightParamB", true);
+            animatorController.SetBool("MoveLeftRightParam", true);
         }
         else if (Input.GetKeyDown(KeyCode.RightArrow))
         {
             spriteRenderer.flipX = true;
-            animatorController.SetBool("MoveLeftRightParamB", true);
+            animatorController.SetBool("MoveLeftRightParam", true);
         }
         else if (Input.GetKeyDown(KeyCode.UpArrow))
         {
             spriteRenderer.flipY = false;
-            animatorController.SetBool("MoveUpDownParamB", true);
+            animatorController.SetBool("MoveUpDownParam", true);
         }
         else if (Input.GetKeyDown(KeyCode.DownArrow))
         {
             spriteRenderer.flipY = true;
-            animatorController.SetBool("MoveUpDownParamB", true);
+            animatorController.SetBool("MoveUpDownParam", true);
         }
     }
 }
