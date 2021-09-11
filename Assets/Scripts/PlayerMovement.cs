@@ -42,9 +42,17 @@ public class PlayerMovement : MonoBehaviour
             player.transform.Rotate(new Vector3(0, 0, 90));
             animatorController.SetBool("MoveUpDownParam", true);
         }
+        else if (Input.GetKeyDown(KeyCode.D))
+        {
+            animatorController.SetBool("AntIsDeadParam", !animatorController.GetBool("AntIsDeadParam"));
+        }
+        else if (Input.GetKeyDown(KeyCode.S))
+        {
+            animatorController.SetBool("AntIsScaredParam", !animatorController.GetBool("AntIsScaredParam"));
+        }
         else if (Input.GetKeyDown(KeyCode.Space))
         {
-            animatorController.SetBool("IsDeadParam", true);
+            animatorController.SetBool("WormIsDeadParam", !animatorController.GetBool("WormIsDeadParam"));
         }
     }
 }
