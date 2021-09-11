@@ -2,11 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerMovement : MonoBehaviour
+public class GhostMovement : MonoBehaviour
 {
     public SpriteRenderer spriteRenderer;
     public Animator animatorController;
-    public GameObject player;
+    public GameObject ghost;
     // Start is called before the first frame update
     void Start()
     {
@@ -18,33 +18,37 @@ public class PlayerMovement : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
-            player.transform.rotation = Quaternion.identity;
+            ghost.transform.rotation = Quaternion.identity;
             spriteRenderer.flipX = false;
             animatorController.SetBool("MoveLeftRightParam", true);
         }
         else if (Input.GetKeyDown(KeyCode.RightArrow))
         {
-            player.transform.rotation = Quaternion.identity;
+            ghost.transform.rotation = Quaternion.identity;
             spriteRenderer.flipX = true;
             animatorController.SetBool("MoveLeftRightParam", true);
         }
         else if (Input.GetKeyDown(KeyCode.UpArrow))
         {
-            player.transform.rotation = Quaternion.identity;
+            ghost.transform.rotation = Quaternion.identity;
             spriteRenderer.flipX = true;
-            player.transform.Rotate(new Vector3(0, 0, 90));
+            ghost.transform.Rotate(new Vector3(0, 0, 90));
             animatorController.SetBool("MoveUpDownParam", true);
         }
         else if (Input.GetKeyDown(KeyCode.DownArrow))
         {
-            player.transform.rotation = Quaternion.identity;
+            ghost.transform.rotation = Quaternion.identity;
             spriteRenderer.flipX = false;
-            player.transform.Rotate(new Vector3(0, 0, 90));
+            ghost.transform.Rotate(new Vector3(0, 0, 90));
             animatorController.SetBool("MoveUpDownParam", true);
         }
-        else if (Input.GetKeyDown(KeyCode.Space))
+        else if (Input.GetKeyDown(KeyCode.D))
         {
-            animatorController.SetBool("WormIsDeadParam", !animatorController.GetBool("WormIsDeadParam"));
+            animatorController.SetBool("AntIsDeadParam", !animatorController.GetBool("AntIsDeadParam"));
+        }
+        else if (Input.GetKeyDown(KeyCode.S))
+        {
+            animatorController.SetBool("AntIsScaredParam", !animatorController.GetBool("AntIsScaredParam"));
         }
     }
 }

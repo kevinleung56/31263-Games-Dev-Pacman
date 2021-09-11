@@ -420,12 +420,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 1306964795}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0c20773550a16b94e9e1e12309b902b3, type: 3}
+  m_Script: {fileID: 11500000, guid: 3319414f16d571d40856142c0a13b811, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   spriteRenderer: {fileID: 1306964797}
   animatorController: {fileID: 1306964796}
-  player: {fileID: 1306964795}
+  ghost: {fileID: 1306964795}
 --- !u!1 &1891371848
 GameObject:
   m_ObjectHideFlags: 0
