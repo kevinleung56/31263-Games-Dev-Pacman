@@ -1,10 +1,7 @@
 fileFormatVersion: 2
-guid: f57ae42fe80fec14488d37f87eb58385
+guid: 3e93759251f5b8a4eb7aac924c8b5992
 TextureImporter:
-  internalIDToNameTable:
-  - first:
-      213: 7381965769198725172
-    second: Banana_0
+  internalIDToNameTable: []
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -92,28 +89,7 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites:
-    - serializedVersion: 2
-      name: Banana_0
-      rect:
-        serializedVersion: 2
-        x: 28
-        y: 32
-        width: 76
-        height: 76
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 438ee2971c2027660800000000000000
-      internalID: 7381965769198725172
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
+    sprites: []
     outline: []
     physicsShape: []
     bones: []
