@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 13312, guid: 0000000000000000e000000000000000, type: 0}
   m_Name: Outside Corner
   m_EditorClassIdentifier: 
-  m_Sprite: {fileID: 21300000, guid: 502118ad56544d1408e2dea131fdafba, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 413dab30ae55ac2498a14537e35b87ce, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Transform:
     e00: 1
