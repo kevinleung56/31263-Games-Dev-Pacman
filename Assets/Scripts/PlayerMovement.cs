@@ -16,26 +16,26 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.LeftArrow))
+        if (Input.GetKeyDown(KeyCode.A))
         {
             player.transform.rotation = Quaternion.identity;
             spriteRenderer.flipX = false;
             animatorController.SetBool("MoveLeftRightParam", true);
         }
-        else if (Input.GetKeyDown(KeyCode.RightArrow))
+        else if (Input.GetKeyDown(KeyCode.D))
         {
             player.transform.rotation = Quaternion.identity;
             spriteRenderer.flipX = true;
             animatorController.SetBool("MoveLeftRightParam", true);
         }
-        else if (Input.GetKeyDown(KeyCode.UpArrow))
+        else if (Input.GetKeyDown(KeyCode.W))
         {
             player.transform.rotation = Quaternion.identity;
             spriteRenderer.flipX = true;
             player.transform.Rotate(new Vector3(0, 0, 90));
             animatorController.SetBool("MoveUpDownParam", true);
         }
-        else if (Input.GetKeyDown(KeyCode.DownArrow))
+        else if (Input.GetKeyDown(KeyCode.S))
         {
             player.transform.rotation = Quaternion.identity;
             spriteRenderer.flipX = false;
