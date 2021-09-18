@@ -22,6 +22,7 @@ public class InputManager : MonoBehaviour
     {
         foreach (var item in itemList)
         {
+            Debug.Log(position);
             if (tweener.AddTween(item.transform, item.transform.position, position, duration))
             {
                 break;
@@ -32,21 +33,21 @@ public class InputManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.A))
+        if (Input.GetKey(KeyCode.A))
         {
-            AddTweenToPosition(new Vector3(-2.0f, 0.5f, 0.0f), 1.5f);
+            AddTweenToPosition(itemList[0].transform.position + new Vector3(-1.0f, 0.0f, 0.0f), 0.25f);
         }
-        else if (Input.GetKeyDown(KeyCode.D))
+        else if (Input.GetKey(KeyCode.D))
         {
-            AddTweenToPosition(new Vector3(2.0f, 0.5f, 0.0f), 1.5f);
+            AddTweenToPosition(itemList[0].transform.position + new Vector3(1.0f, 0.0f, 0.0f), 0.25f);
         }
-        else if (Input.GetKeyDown(KeyCode.S))
+        else if (Input.GetKey(KeyCode.S))
         {
-            AddTweenToPosition(new Vector3(0.0f, 0.5f, -2.0f), 0.5f);
+            AddTweenToPosition(itemList[0].transform.position + new Vector3(0.0f, -1.0f, 0.0f), 0.25f);
         }
-        else if (Input.GetKeyDown(KeyCode.W))
+        else if (Input.GetKey(KeyCode.W))
         {
-            AddTweenToPosition(new Vector3(0.0f, 0.5f, 2.0f), 0.5f);
+            AddTweenToPosition(itemList[0].transform.position + new Vector3(0.0f, 1.0f, 1.0f), 0.25f);
         }
     }
 }
