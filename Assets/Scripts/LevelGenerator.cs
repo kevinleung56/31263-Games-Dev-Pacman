@@ -68,7 +68,7 @@ public class LevelGenerator : MonoBehaviour
                 if (spriteValue != 0) // If not empty tile
                 {
                     newTile = Instantiate(tileObjects[spriteValue], new Vector2(x, y), Quaternion.identity, gamemap.transform);
-                    newTile.transform.rotation = setRotation(x, y, spriteValue);
+                    newTile.transform.rotation = SetRotation(x, y, spriteValue);
                 }
             }
         }
@@ -80,21 +80,21 @@ public class LevelGenerator : MonoBehaviour
         quadrant.transform.localScale = scale;
     }
 
-    Quaternion setRotation(int x, int y, int spriteValue)
+    Quaternion SetRotation(int x, int y, int spriteValue)
     {
         switch (spriteValue)
         {
-            case 1: return cornerRotation(x, y);
-            case 2: return wallRotation(x, y);
-            case 3: return cornerRotation(x, y);
-            case 4: return wallRotation(x, y);
+            case 1: return CornerRotation(x, y);
+            case 2: return WallRotation(x, y);
+            case 3: return CornerRotation(x, y);
+            case 4: return WallRotation(x, y);
             case 6: return Quaternion.Euler(0, 0, 90);
             case 7: return Quaternion.Euler(0, 0, 90);
             default: return Quaternion.identity;
         }
     }
 
-    Quaternion cornerRotation(int x, int y) // Get rotation of corner from coordinate
+    Quaternion CornerRotation(int x, int y) // Get rotation of corner from coordinate
     {
         RaycastHit2D leftExists = Physics2D.Raycast(new Vector2(x, y), -newTile.transform.right, 1);
         RaycastHit2D downExists = Physics2D.Raycast(new Vector2(x, y), -newTile.transform.up, 1);
@@ -134,7 +134,7 @@ public class LevelGenerator : MonoBehaviour
         }
     }
 
-    Quaternion wallRotation(int x, int y) // Get rotation of wall from coordinate
+    Quaternion WallRotation(int x, int y) // Get rotation of wall from coordinate
     {
         RaycastHit2D leftExists = Physics2D.Raycast(new Vector2(x, y), -newTile.transform.right, 1);
         if (leftExists) // If left contact
