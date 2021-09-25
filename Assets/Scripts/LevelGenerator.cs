@@ -35,6 +35,11 @@ public class LevelGenerator : MonoBehaviour
         gamemap = new GameObject("Map");
         var tilemap = GameObject.Find("Tilemap");
         var tilemapComponent = tilemap.GetComponent<Tilemap>();
+        var apples = GameObject.FindGameObjectsWithTag("Apple");
+        foreach(var apple in apples)
+        {
+            Destroy(apple); // Delete the manual level 0 layout apples
+        }
         tilemapComponent.ClearAllTiles(); // Clear manual level 0 layout
 
         GenerateLevel0Layout(); // Second quadrant
@@ -100,13 +105,13 @@ public class LevelGenerator : MonoBehaviour
         var downExists = Physics2D.Raycast(new Vector2(x, y), -newTile.transform.up, 1);
         if (leftExists && downExists) // If in contact with left and down
         {
-            if (levelMap[x + 1, y] == 4 && levelMap[x, y - 1] == 4) // If right & below is inside wall
-            {
-                return Quaternion.identity;
-            }
-            else if (levelMap[x - 1, y] == 3) // If left is inside corner
+            if (levelMap[x - 1, y] == 3) // If left is inside corner
             {
                 return Quaternion.Euler(0, 0, leftExists.collider.transform.rotation.eulerAngles.z - 90f);
+            }
+            else if (levelMap[x + 1, y] == 4 && levelMap[x, y - 1] == 4) // If right & below is inside wall
+            {
+                return Quaternion.identity;
             }
             else if (
                 levelMap[x - 1, y] == 4 && levelMap[x, y - 1] == 4
