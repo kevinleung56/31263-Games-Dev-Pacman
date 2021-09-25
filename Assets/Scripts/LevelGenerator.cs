@@ -52,12 +52,12 @@ public class LevelGenerator : MonoBehaviour
             Quaternion.Euler(0, 0, 90)); // First quadrant
 
         GenerateQuadrant(
-            new Vector2(-8.5f, -24.5f),
+            new Vector2(-8.5f, -23.5f), // Y-axis overlap by 1 unit to make way for tunnel
             new Vector2(1, -1),
             Quaternion.Euler(0, 0, 90)); // Third quadrant
 
         GenerateQuadrant(
-            new Vector2(18.5f, -24.5f),
+            new Vector2(18.5f, -23.5f), // Y-axis overlap by 1 unit to make way for tunnel
             new Vector2(-1, -1),
             Quaternion.Euler(0, 0, -90)); // Fourth quadrant
     }
