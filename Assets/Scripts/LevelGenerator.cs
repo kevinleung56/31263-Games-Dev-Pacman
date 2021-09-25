@@ -96,17 +96,17 @@ public class LevelGenerator : MonoBehaviour
 
     Quaternion CornerRotation(int x, int y) // Get rotation of corner from coordinate
     {
-        RaycastHit2D leftExists = Physics2D.Raycast(new Vector2(x, y), -newTile.transform.right, 1);
-        RaycastHit2D downExists = Physics2D.Raycast(new Vector2(x, y), -newTile.transform.up, 1);
+        var leftExists = Physics2D.Raycast(new Vector2(x, y), -newTile.transform.right, 1);
+        var downExists = Physics2D.Raycast(new Vector2(x, y), -newTile.transform.up, 1);
         if (leftExists && downExists) // If in contact with left and down
         {
-            if (levelMap[x - 1, y] == 3) // If left is inside corner
-            {
-                return Quaternion.Euler(0, 0, leftExists.collider.transform.rotation.eulerAngles.z - 90f);
-            }
-            else if (levelMap[x + 1, y] == 4 && levelMap[x, y - 1] == 4) // If right & below is inside wall
+            if (levelMap[x + 1, y] == 4 && levelMap[x, y - 1] == 4) // If right & below is inside wall
             {
                 return Quaternion.identity;
+            }
+            else if (levelMap[x - 1, y] == 3) // If left is inside corner
+            {
+                return Quaternion.Euler(0, 0, leftExists.collider.transform.rotation.eulerAngles.z - 90f);
             }
             else if (
                 levelMap[x - 1, y] == 4 && levelMap[x, y - 1] == 4
@@ -136,7 +136,7 @@ public class LevelGenerator : MonoBehaviour
 
     Quaternion WallRotation(int x, int y) // Get rotation of wall from coordinate
     {
-        RaycastHit2D leftExists = Physics2D.Raycast(new Vector2(x, y), -newTile.transform.right, 1);
+        var leftExists = Physics2D.Raycast(new Vector2(x, y), -newTile.transform.right, 1);
         if (leftExists) // If left contact
         {
             if (leftExists.collider.gameObject.GetComponent<SpriteRenderer>().sprite // If left is wall
