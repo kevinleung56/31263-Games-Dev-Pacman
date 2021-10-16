@@ -531,7 +531,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b2a7a9205c24f0141b66e60d04ba75d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  item: {fileID: 298830507}
+  pacStudent: {fileID: 298830507}
   spriteRenderer: {fileID: 298830510}
   animatorController: {fileID: 298830508}
   audioOnMoveNoPellet: {fileID: 421396020}
