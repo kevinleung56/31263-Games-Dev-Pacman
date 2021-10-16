@@ -20,6 +20,7 @@ public class PacStudentController : MonoBehaviour
     private Tweener tweener;
     private KeyCode? lastInput;
     private KeyCode? currentInput;
+    private enum Directions { Up, Down, Left, Right };
 
     void Start()
     {
@@ -37,10 +38,165 @@ public class PacStudentController : MonoBehaviour
         audioOnMoveNoPellet.Play();
     }
 
+    bool IsBlockedByWall(Directions directionToGo)
+    {
+        var facingDirection = IdentifyFacingDirection();
+        Vector2? direction = null;
+
+        if (facingDirection == Directions.Up || facingDirection == Directions.Down)
+        {
+            if (directionToGo == Directions.Up)
+            {
+                direction = pacStudent.transform.right;
+            }
+            else if (directionToGo == Directions.Down)
+            {
+                direction = -pacStudent.transform.right;
+            }
+            else if (directionToGo == Directions.Left)
+            {
+                direction = pacStudent.transform.up;
+            }
+            else if (directionToGo == Directions.Right)
+            {
+                direction = -pacStudent.transform.up;
+            }
+        }
+        else
+        {
+            if (directionToGo == Directions.Up)
+            {
+                direction = pacStudent.transform.up;
+            }
+            else if (directionToGo == Directions.Down)
+            {
+                direction = -pacStudent.transform.up;
+            }
+            else if (directionToGo == Directions.Left)
+            {
+                direction = -pacStudent.transform.right;
+            }
+            else if (directionToGo == Directions.Right)
+            {
+                direction = pacStudent.transform.right;
+            }
+        }
+
+        //switch(facingDirection)
+        //{
+        //    case Directions.Up:
+        //        if (directionToGo == Directions.Up)
+        //        {
+        //            direction = pacStudent.transform.right;
+        //        }
+        //        else if (directionToGo == Directions.Down)
+        //        {
+        //            direction = -pacStudent.transform.right;
+        //        }
+        //        else if (directionToGo == Directions.Left)
+        //        {
+        //            direction = pacStudent.transform.up;
+        //        }
+        //        else if (directionToGo == Directions.Right)
+        //        {
+        //            direction = -pacStudent.transform.up;
+        //        }
+        //        break;
+        //    case Directions.Down:
+        //        if (directionToGo == Directions.Up)
+        //        {
+        //            direction = pacStudent.transform.right;
+        //        }
+        //        else if (directionToGo == Directions.Down)
+        //        {
+        //            direction = -pacStudent.transform.right;
+        //        }
+        //        else if (directionToGo == Directions.Left)
+        //        {
+        //            direction = pacStudent.transform.up;
+        //        }
+        //        else if (directionToGo == Directions.Right)
+        //        {
+        //            direction = -pacStudent.transform.up;
+        //        }
+        //        break;
+        //    case Directions.Left:
+        //        if (directionToGo == Directions.Up)
+        //        {
+        //            direction = pacStudent.transform.up;
+        //        }
+        //        else if (directionToGo == Directions.Down)
+        //        {
+        //            direction = -pacStudent.transform.up;
+        //        }
+        //        else if (directionToGo == Directions.Left)
+        //        {
+        //            direction = -pacStudent.transform.right;
+        //        }
+        //        else if (directionToGo == Directions.Right)
+        //        {
+        //            direction = pacStudent.transform.right;
+        //        }
+        //        break;
+        //    case Directions.Right:
+        //        if (directionToGo == Directions.Up)
+        //        {
+        //            direction = pacStudent.transform.up;
+        //        }
+        //        else if (directionToGo == Directions.Down)
+        //        {
+        //            direction = -pacStudent.transform.up;
+        //        }
+        //        else if (directionToGo == Directions.Left)
+        //        {
+        //            direction = -pacStudent.transform.right;
+        //        }
+        //        else if (directionToGo == Directions.Right)
+        //        {
+        //            direction = pacStudent.transform.right;
+        //        }
+        //        break;
+        //    default: break;
+        //}
+
+        if (direction != null)
+        {
+            var hit = Physics2D.Raycast(pacStudent.transform.position, (Vector2)direction, 1);
+
+            if (hit.collider != null && hit.collider.gameObject.CompareTag("Wall"))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    Directions IdentifyFacingDirection()
+    {
+        if (spriteRenderer.flipX) // Direction is facing up or right
+        {
+            if (pacStudent.transform.rotation == Quaternion.Euler(new Vector3(0, 0, 90))) // Up
+            {
+                return Directions.Up;
+            }
+
+            return Directions.Right;
+        }
+        else // Direction is facing left or down
+        {
+            if (pacStudent.transform.rotation == Quaternion.Euler(new Vector3(0, 0, 90))) // Down
+            {
+                return Directions.Down;
+            }
+
+            return Directions.Left;
+        }
+    }
+
     bool MoveLeft(Vector3? vector = null, float duration = 0.25f)
     {
-        var leftExists = Physics2D.Raycast(pacStudent.transform.position, -pacStudent.transform.right, 1);
-        if (leftExists)
+        if (IsBlockedByWall(Directions.Left))
         {
             return false;
         }
@@ -55,8 +211,7 @@ public class PacStudentController : MonoBehaviour
 
     bool MoveRight(Vector3? vector = null, float duration = 0.25f)
     {
-        var rightExists = Physics2D.Raycast(pacStudent.transform.position, pacStudent.transform.right, 1);
-        if (rightExists)
+        if (IsBlockedByWall(Directions.Right))
         {
             return false;
         }
@@ -71,8 +226,7 @@ public class PacStudentController : MonoBehaviour
 
     bool MoveUp(Vector3? vector = null, float duration = 0.25f)
     {
-        var upExists = Physics2D.Raycast(pacStudent.transform.position, pacStudent.transform.up, 1);
-        if (upExists)
+        if (IsBlockedByWall(Directions.Up)) // When rotated, right becomes Pac-student's forward
         {
             return false;
         }
@@ -88,8 +242,7 @@ public class PacStudentController : MonoBehaviour
 
     bool MoveDown(Vector3? vector = null, float duration = 0.25f)
     {
-        var downExists = Physics2D.Raycast(pacStudent.transform.position, -pacStudent.transform.up, 1);
-        if (downExists)
+        if (IsBlockedByWall(Directions.Down))
         {
             return false;
         }
