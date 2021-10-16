@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class UIManager : MonoBehaviour
 {
@@ -17,5 +18,15 @@ public class UIManager : MonoBehaviour
     void Update()
     {
         
+    }
+
+    private void Awake()
+    {
+        DontDestroyOnLoad(gameObject);
+    }
+
+    public void LoadFirstLevel()
+    {
+        SceneManager.LoadSceneAsync(0);
     }
 }
