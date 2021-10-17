@@ -324,4 +324,18 @@ public class PacStudentController : MonoBehaviour
         }
     }
 
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        Debug.Log("Collision Enter: " + collision.gameObject + " : " + collision.transform.position);
+        if (collision.gameObject.CompareTag("Pellet"))
+        {
+            // Add 10 to score
+            Destroy(collision.gameObject);
+        }
+        else if (collision.gameObject.CompareTag("Cherry"))
+        {
+            // Add 100 to score
+            Destroy(collision.gameObject);
+        }
+    }
 }
