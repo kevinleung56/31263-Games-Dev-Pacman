@@ -101,13 +101,15 @@ public class LevelGenerator : MonoBehaviour
 
     Quaternion CornerRotation(int x, int y) // Get rotation of corner from coordinate
     {
-        var leftExists = Physics2D.Raycast(new Vector2(x, y), -newTile.transform.right, 1);
-        var downExists = Physics2D.Raycast(new Vector2(x, y), -newTile.transform.up, 1);
+        var leftHit = Physics2D.Raycast(new Vector2(x, y), -newTile.transform.right, 1);
+        var downHit = Physics2D.Raycast(new Vector2(x, y), -newTile.transform.up, 1);
+        var leftExists = leftHit.collider != null && leftHit.collider.gameObject.CompareTag("Wall");
+        var downExists = downHit.collider != null && downHit.collider.gameObject.CompareTag("Wall");
         if (leftExists && downExists) // If in contact with left and down
         {
             if (levelMap[x - 1, y] == 3) // If left is inside corner
             {
-                return Quaternion.Euler(0, 0, leftExists.collider.transform.rotation.eulerAngles.z - 90f);
+                return Quaternion.Euler(0, 0, leftHit.collider.transform.rotation.eulerAngles.z - 90f);
             }
             else if (levelMap[x + 1, y] == 4 && levelMap[x, y - 1] == 4) // If right & below is inside wall
             {
@@ -115,8 +117,8 @@ public class LevelGenerator : MonoBehaviour
             }
             else if (
                 levelMap[x - 1, y] == 4 && levelMap[x, y - 1] == 4
-                && (int)leftExists.transform.rotation.eulerAngles.z  // If left & below is inside wall
-                == (int)downExists.transform.rotation.eulerAngles.z) // And have same rotation
+                && (int)leftHit.transform.rotation.eulerAngles.z  // If left & below is inside wall
+                == (int)downHit.transform.rotation.eulerAngles.z) // And have same rotation
             {
                 return Quaternion.Euler(0, 0, 180);
             }
@@ -141,13 +143,15 @@ public class LevelGenerator : MonoBehaviour
 
     Quaternion WallRotation(int x, int y) // Get rotation of wall from coordinate
     {
-        var leftExists = Physics2D.Raycast(new Vector2(x, y), -newTile.transform.right, 1);
+        var leftHit = Physics2D.Raycast(new Vector2(x, y), -newTile.transform.right, 1);
+        var leftExists = leftHit.collider != null && leftHit.collider.gameObject.CompareTag("Wall");
+
         if (leftExists) // If left contact
         {
-            if (leftExists.collider.gameObject.GetComponent<SpriteRenderer>().sprite // If left is wall
+            if (leftHit.collider.gameObject.GetComponent<SpriteRenderer>().sprite // If left is wall
                 == newTile.GetComponent<SpriteRenderer>().sprite)
             {
-                return leftExists.collider.transform.rotation * Quaternion.identity; // Continue the wall
+                return leftHit.collider.transform.rotation * Quaternion.identity; // Continue the wall
             }
             else
             {
