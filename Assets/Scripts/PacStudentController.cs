@@ -17,6 +17,9 @@ public class PacStudentController : MonoBehaviour
     [SerializeField]
     private AudioSource audioOnMoveNoPellet;
 
+    [SerializeField]
+    private ParticleSystem dust;
+
     private Tweener tweener;
     private KeyCode? lastInput;
     private KeyCode? currentInput;
@@ -36,6 +39,7 @@ public class PacStudentController : MonoBehaviour
     {
         pacStudent.transform.rotation = Quaternion.identity;
         audioOnMoveNoPellet.Play();
+        CreateDustTrail();
     }
 
     bool IsBlockedByWall(Directions directionToGo)
@@ -288,5 +292,10 @@ public class PacStudentController : MonoBehaviour
                 default: break;
             }
         }
+    }
+
+    void CreateDustTrail()
+    {
+        dust.Play();
     }
 }
