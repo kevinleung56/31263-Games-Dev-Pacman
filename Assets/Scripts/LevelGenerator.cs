@@ -10,7 +10,7 @@ public class LevelGenerator : MonoBehaviour
     private GameObject newTile;
     private GameObject gamemap;
 
-    int[,] levelMap =
+    public static int[,] levelMap =
     {
         {1,2,2,2,2,2,2,2,2,2,2,2,2,7},
         {2,5,5,5,5,5,5,5,5,5,5,5,5,4},
