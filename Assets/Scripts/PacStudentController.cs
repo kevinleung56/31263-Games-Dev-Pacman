@@ -125,6 +125,8 @@ public class PacStudentController : MonoBehaviour
     {
         if (IsBlockedByWall(Directions.Left))
         {
+            animatorController.SetBool("MoveLeftRightParam", false);
+            StopDustTrail();
             return false;
         }
 
@@ -140,6 +142,8 @@ public class PacStudentController : MonoBehaviour
     {
         if (IsBlockedByWall(Directions.Right))
         {
+            animatorController.SetBool("MoveLeftRightParam", false);
+            StopDustTrail();
             return false;
         }
 
@@ -155,6 +159,8 @@ public class PacStudentController : MonoBehaviour
     {
         if (IsBlockedByWall(Directions.Up)) // When rotated, right becomes Pac-student's forward
         {
+            animatorController.SetBool("MoveUpDownParam", false);
+            StopDustTrail();
             return false;
         }
 
@@ -171,6 +177,8 @@ public class PacStudentController : MonoBehaviour
     {
         if (IsBlockedByWall(Directions.Down))
         {
+            animatorController.SetBool("MoveUpDownParam", false);
+            StopDustTrail();
             return false;
         }
 
@@ -307,4 +315,13 @@ public class PacStudentController : MonoBehaviour
     {
         dust.Play();
     }
+
+    void StopDustTrail()
+    {
+        if (dust.isPlaying)
+        {
+            dust.Stop();
+        }
+    }
+
 }
