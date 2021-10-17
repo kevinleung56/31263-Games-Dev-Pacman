@@ -186,6 +186,15 @@ public class PacStudentController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if ((Vector2)pacStudent.transform.position == new Vector2(19.5f, -9.5f)) // Right tunnel
+        {
+            pacStudent.transform.position = new Vector2(-8.5f, -9.5f); // Teleportation
+        }
+        else if ((Vector2)pacStudent.transform.position == new Vector2(-9.5f, -9.5f)) // Left tunnel
+        {
+            pacStudent.transform.position = new Vector2(18.5f, -9.5f); // Teleportation
+        }
+
         if (Input.GetKey(KeyCode.A))
         {
             MoveLeft();
