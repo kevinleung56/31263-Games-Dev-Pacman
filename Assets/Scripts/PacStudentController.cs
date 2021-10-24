@@ -180,7 +180,7 @@ public class PacStudentController : MonoBehaviour
     {
         if (IsBlockedByWall(Directions.Up)) // When rotated, right becomes Pac-student's forward
         {
-            animatorController.SetBool("MoveUpDownParam", false);
+            animatorController.SetBool("MoveLeftRightParam", false);
             StopDustTrail();
             return false;
         }
@@ -189,7 +189,7 @@ public class PacStudentController : MonoBehaviour
         OnPlayerMove();
         spriteRenderer.flipX = true;
         pacStudent.transform.Rotate(new Vector3(0, 0, 90));
-        animatorController.SetBool("MoveUpDownParam", true);
+        animatorController.SetBool("MoveLeftRightParam", true);
         AddTweenToPosition(pacStudent.transform.position + vectorToMove, duration);
         return true;
     }
@@ -198,7 +198,7 @@ public class PacStudentController : MonoBehaviour
     {
         if (IsBlockedByWall(Directions.Down))
         {
-            animatorController.SetBool("MoveUpDownParam", false);
+            animatorController.SetBool("MoveLeftRightParam", false);
             StopDustTrail();
             return false;
         }
@@ -207,7 +207,7 @@ public class PacStudentController : MonoBehaviour
         OnPlayerMove();
         spriteRenderer.flipX = false;
         pacStudent.transform.Rotate(new Vector3(0, 0, 90));
-        animatorController.SetBool("MoveUpDownParam", true);
+        animatorController.SetBool("MoveLeftRightParam", true);
         AddTweenToPosition(pacStudent.transform.position + vectorToMove, duration);
         return true;
     }
@@ -310,28 +310,16 @@ public class PacStudentController : MonoBehaviour
             switch (currentInput)
             {
                 case KeyCode.A:
-                    if (!MoveLeft())
-                    {
-                        return; // Do nothing
-                    }
+                    MoveLeft();
                     break;
                 case KeyCode.D:
-                    if (!MoveRight())
-                    {
-                        return;
-                    }
+                    MoveRight();
                     break;
                 case KeyCode.W:
-                    if (!MoveUp())
-                    {
-                        return;
-                    }
+                    MoveUp();
                     break;
                 case KeyCode.S:
-                    if (!MoveDown())
-                    {
-                        return;
-                    }
+                    MoveDown();
                     break;
                 default: break;
             }
