@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -337,5 +337,47 @@ public class PacStudentController : MonoBehaviour
             // Add 100 to score
             Destroy(collision.gameObject);
         }
+        else if (collision.gameObject.CompareTag("PowerPellet"))
+        {
+            /* 
+             * Change the Ghost animator state to Scared.
+             * 
+             * Change the background music to match this state.
+             * 
+             * Start a timer for 10 seconds. Make the Ghost Timer UI element visible and set it to this timer.
+             * 
+             * With 3 seconds left to go on this timer, change the Ghosts to the Recovering state.
+             * 
+             * After 10 seconds have passed, set the Ghosts back to their Walking states
+             * and hide the Ghost Timer UI element.*/
+
+
+        }
+        else if (collision.gameObject.CompareTag("NormalAnt"))
+        {
+            /*
+             * PacStudent dies and loses a life. Update the UI element for this.
+             *
+             * Play a particle effect around PacStudent the spot of PacStudents death.
+             *
+             * Respawn PacStudent by moving them to the top‐left hand corner,
+             * where they started the game, and wait for player input.*/
+
+
+        }
+        else if (collision.gameObject.CompareTag("ScaredAnt"))
+        {
+            /*
+             * PacStudent dies and loses a life. Update the UI element for this.
+             *
+             * Play a particle effect around PacStudent the spot of PacStudents death.
+             *
+             * Respawn PacStudent by moving them to the top‐left hand corner,
+             * where they started the game, and wait for player input.*/
+
+
+        }
     }
+
+
 }
