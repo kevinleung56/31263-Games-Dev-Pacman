@@ -9,12 +9,11 @@ TagManager:
   - Pellet
   - Cherry
   - PowerPellet
-  - NormalAnt
   - GhostTimer
   - Score
   - GameTimer
   - Health
-  - ScaredAnt
+  - Ant
   layers:
   - Default
   - TransparentFX

@@ -367,43 +367,51 @@ public class PacStudentController : MonoBehaviour
              * 
              * After 10 seconds have passed, set the Ghosts back to their Walking states
              * and hide the Ghost Timer UI element.*/
+            var ants = GameObject.FindGameObjectsWithTag("Ant");
 
-
-        }
-        else if (collision.gameObject.CompareTag("NormalAnt"))
-        {
-            /*
-             * PacStudent dies and loses a life. Update the UI element for this.
-             *
-             * Play a particle effect around PacStudent the spot of PacStudents death.
-             *
-             * Respawn PacStudent by moving them to the top‐left hand corner,
-             * where they started the game, and wait for player input.*/
-
-            var healthToLose = healthObjects.Find(x => x.name.Contains(playerHealth.ToString()));
-            playerHealth--;
-            healthToLose.SetActive(false);
-
-            if (playerHealth == 0) // Player is dead
+            foreach (var ant in ants)
             {
-                // Play particle effect
-
-
-                gameObject.transform.position = new Vector2(-7.5f, 3.5f);
-
+                var animator = ant.GetComponent<Animator>();
+                if (!animator.GetBool("AntIsDeadParam"))
+                {
+                    animator.SetBool("AntIsRecoveringParam", false);
+                    animator.SetBool("AntIsScaredParam", true);
+                }
             }
         }
-        else if (collision.gameObject.CompareTag("ScaredAnt"))
+        else if (collision.gameObject.CompareTag("Ant"))
         {
-            /*
-             * The ghost dies and enters their Dead animator state.
-             * Change the background music to match this state. 
-             * Add 300 points to the player’s score.  
-             * 
-             * Start a 5 second timer (this does not need to be visible).
-             * Once this 5 seconds has passed, transition the ghost back to the Walking state.*/
+            var animator = collision.gameObject.GetComponent<Animator>();
+            if (animator.GetBool("AntIsScaredParam")) // Ant is scared
+            {
 
-            collision.gameObject.GetComponent<Animator>();
+            }
+            else if (animator.GetBool("AntIsDeadParam")) // Ant is dead
+            {
+
+            }
+            else // Normal ant
+            {
+                var healthToLose = healthObjects.Find(x => x.name.Contains(playerHealth.ToString()));
+                playerHealth--;
+                healthToLose.SetActive(false);
+                /*
+                 * PacStudent dies and loses a life. Update the UI element for this.
+                 *
+                 * Play a particle effect around PacStudent the spot of PacStudents death.
+                 *
+                 * Respawn PacStudent by moving them to the top‐left hand corner,
+                 * where they started the game, and wait for player input.*/
+
+                if (playerHealth == 0) // Player is dead
+                {
+                    // Play particle effect
+
+
+                    gameObject.transform.position = new Vector2(-7.5f, 3.5f);
+                }
+            }
+            
         }
     }
 
