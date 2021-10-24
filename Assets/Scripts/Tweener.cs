@@ -30,7 +30,7 @@ public class Tweener : MonoBehaviour
     {
         for (int i = 0; i < activeTweens.Count; i++)
         {
-            if (activeTweens[i] != null)
+            if (activeTweens[i] != null && activeTweens[i].Target != null)
             {
                 if (Vector3.Distance(activeTweens[i].Target.position, activeTweens[i].EndPos) > 0.1f)
                 {

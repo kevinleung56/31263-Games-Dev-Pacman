@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -24,11 +26,13 @@ public class PacStudentController : MonoBehaviour
     private GameObject scoreObject;
     private GameObject ghostTimerObject;
     private GameObject gameTimerObject;
+    private List<GameObject> healthObjects;
     private Text gameTimer;
     private Text score;
     private Stopwatch watch;
     private KeyCode? lastInput;
     private KeyCode? currentInput;
+    private int playerHealth = 3;
     private enum Directions { Up, Down, Left, Right };
 
     void Start()
@@ -37,6 +41,7 @@ public class PacStudentController : MonoBehaviour
         scoreObject = GameObject.FindGameObjectWithTag("Score");
         ghostTimerObject = GameObject.FindGameObjectWithTag("GhostTimer");
         gameTimerObject = GameObject.FindGameObjectWithTag("GameTimer");
+        healthObjects = GameObject.FindGameObjectsWithTag("Health").ToList();
 
         score = scoreObject.GetComponent<Text>();
         gameTimer = gameTimerObject.GetComponent<Text>();
@@ -348,7 +353,7 @@ public class PacStudentController : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        //UnityEngine.Debug.Log("Collision Enter: " + collision.gameObject + " : " + collision.transform.position);
+        UnityEngine.Debug.Log("Collision Enter: " + collision.gameObject + " : " + collision.transform.position);
         if (collision.gameObject.CompareTag("Pellet"))
         {
             // Add 10 to score
@@ -387,19 +392,30 @@ public class PacStudentController : MonoBehaviour
              * Respawn PacStudent by moving them to the top‐left hand corner,
              * where they started the game, and wait for player input.*/
 
+            var healthToLose = healthObjects.Find(x => x.name.Contains(playerHealth.ToString()));
+            playerHealth--;
+            healthToLose.SetActive(false);
 
+            if (playerHealth == 0) // Player is dead
+            {
+                // Play particle effect
+
+
+                gameObject.transform.position = new Vector2(-7.5f, 3.5f);
+
+            }
         }
         else if (collision.gameObject.CompareTag("ScaredAnt"))
         {
             /*
-             * PacStudent dies and loses a life. Update the UI element for this.
-             *
-             * Play a particle effect around PacStudent the spot of PacStudents death.
-             *
-             * Respawn PacStudent by moving them to the top‐left hand corner,
-             * where they started the game, and wait for player input.*/
+             * The ghost dies and enters their Dead animator state.
+             * Change the background music to match this state. 
+             * Add 300 points to the player’s score.  
+             * 
+             * Start a 5 second timer (this does not need to be visible).
+             * Once this 5 seconds has passed, transition the ghost back to the Walking state.*/
 
-
+            collision.gameObject.GetComponent<Animator>();
         }
     }
 

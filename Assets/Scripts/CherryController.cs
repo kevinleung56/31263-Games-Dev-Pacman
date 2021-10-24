@@ -47,10 +47,16 @@ public class CherryController : MonoBehaviour
         tweener.AddTween(newCherry.transform, newCherry.transform.position, centreOfMapPosition, 5f);
         yield return new WaitForSeconds(5f);
 
-        tweener.AddTween(newCherry.transform, newCherry.transform.position, finalPosition, 5f);
-        yield return new WaitForSeconds(5f);
+        if (newCherry != null) // If player has not collided already
+        {
+            tweener.AddTween(newCherry.transform, newCherry.transform.position, finalPosition, 5f);
+            yield return new WaitForSeconds(5f);
 
-        Destroy(newCherry);
+            if (newCherry != null)
+            {
+                Destroy(newCherry);
+            }
+        }
     }
 
     Vector2 GenerateRandomPointOutOfBounds()

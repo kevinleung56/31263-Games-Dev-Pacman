@@ -13,6 +13,7 @@ TagManager:
   - GhostTimer
   - Score
   - GameTimer
+  - Health
   layers:
   - Default
   - TransparentFX

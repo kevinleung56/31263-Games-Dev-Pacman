@@ -519,7 +519,7 @@ GameObject:
   - component: {fileID: 306737766}
   m_Layer: 5
   m_Name: LivesCounter 1
-  m_TagString: Untagged
+  m_TagString: Health
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -540,7 +540,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 160, y: 195}
+  m_AnchoredPosition: {x: 120, y: 195}
   m_SizeDelta: {x: 40.0237, y: 40.0237}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &306737766
@@ -1079,7 +1079,7 @@ GameObject:
   - component: {fileID: 1067554265}
   m_Layer: 5
   m_Name: LivesCounter 2
-  m_TagString: Untagged
+  m_TagString: Health
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1483,7 +1483,7 @@ GameObject:
   - component: {fileID: 1484288542}
   m_Layer: 5
   m_Name: LivesCounter 3
-  m_TagString: Untagged
+  m_TagString: Health
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1504,7 +1504,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 120, y: 195}
+  m_AnchoredPosition: {x: 160, y: 195}
   m_SizeDelta: {x: 40.0237, y: 40.0237}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1484288542
