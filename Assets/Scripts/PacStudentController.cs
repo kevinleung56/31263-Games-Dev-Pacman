@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using UnityEngine;
@@ -30,10 +31,12 @@ public class PacStudentController : MonoBehaviour
     private Text gameTimer;
     private Text score;
     private Stopwatch watch;
+    private Stopwatch timer;
     private KeyCode? lastInput;
     private KeyCode? currentInput;
     private int playerHealth = 3;
     private enum Directions { Up, Down, Left, Right };
+    private enum GhostState { Walking, Scared, Recovering, Dead };
 
     void Start()
     {
@@ -46,6 +49,7 @@ public class PacStudentController : MonoBehaviour
         score = scoreObject.GetComponent<Text>();
         gameTimer = gameTimerObject.GetComponent<Text>();
         watch = new Stopwatch();
+        timer = new Stopwatch();
         watch.Start();
 
         ghostTimerObject.SetActive(false);
@@ -217,9 +221,19 @@ public class PacStudentController : MonoBehaviour
     {
         var currentTime = watch.Elapsed;
         var currentTimeFormatted = string.Format("{0:00}:{1:00}:{2:00}", currentTime.Minutes, currentTime.Seconds, currentTime.Milliseconds / 10);
-
         gameTimer.text = currentTimeFormatted;
 
+        if (timer != null && timer.IsRunning)
+        {
+            var timeLeftTimer = 10 - timer.Elapsed.Seconds;
+
+            if (timeLeftTimer <= 0)
+            {
+                ghostTimerObject.SetActive(false);
+                timer.Stop();
+                timer.Reset();
+            }
+        }
 
         if ((Vector2)pacStudent.transform.position == new Vector2(19.5f, -9.5f)) // Right tunnel
         {
@@ -339,6 +353,72 @@ public class PacStudentController : MonoBehaviour
         }
     }
 
+    void SetAllAntStates(GhostState state)
+    {
+        var ants = GameObject.FindGameObjectsWithTag("Ant");
+        
+        switch (state)
+        {
+            case GhostState.Walking:
+                foreach (var ant in ants)
+                {
+                    var animator = ant.GetComponent<Animator>();
+                    animator.SetBool("AntIsDeadParam", false);
+                    animator.SetBool("AntIsRecoveringParam", false);
+                    animator.SetBool("AntIsScaredParam", false);
+                }
+
+                break;
+            case GhostState.Scared:
+                foreach (var ant in ants)
+                {
+                    var animator = ant.GetComponent<Animator>();
+                    animator.SetBool("AntIsDeadParam", false);
+                    animator.SetBool("AntIsRecoveringParam", false);
+                    animator.SetBool("AntIsScaredParam", true);
+                }
+
+                break;
+
+            case GhostState.Recovering:
+                foreach (var ant in ants)
+                {
+                    var animator = ant.GetComponent<Animator>();
+                    animator.SetBool("AntIsDeadParam", false);
+                    animator.SetBool("AntIsRecoveringParam", true);
+                    animator.SetBool("AntIsScaredParam", false);
+                }
+
+                break;
+
+            case GhostState.Dead:
+                foreach (var ant in ants)
+                {
+                    var animator = ant.GetComponent<Animator>();
+                    animator.SetBool("AntIsDeadParam", true);
+                    animator.SetBool("AntIsRecoveringParam", false);
+                    animator.SetBool("AntIsScaredParam", false);
+                }
+
+                break;
+
+            default: break;
+        }
+    }
+
+    private IEnumerator SetAllAntsScaredCoroutine()
+    {
+        SetAllAntStates(GhostState.Scared);
+
+        yield return new WaitForSeconds(7);
+
+        SetAllAntStates(GhostState.Recovering);
+
+        yield return new WaitForSeconds(3);
+
+        SetAllAntStates(GhostState.Walking);
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         UnityEngine.Debug.Log("Collision Enter: " + collision.gameObject + " : " + collision.transform.position);
@@ -367,17 +447,11 @@ public class PacStudentController : MonoBehaviour
              * 
              * After 10 seconds have passed, set the Ghosts back to their Walking states
              * and hide the Ghost Timer UI element.*/
-            var ants = GameObject.FindGameObjectsWithTag("Ant");
 
-            foreach (var ant in ants)
-            {
-                var animator = ant.GetComponent<Animator>();
-                if (!animator.GetBool("AntIsDeadParam"))
-                {
-                    animator.SetBool("AntIsRecoveringParam", false);
-                    animator.SetBool("AntIsScaredParam", true);
-                }
-            }
+            StartCoroutine(SetAllAntsScaredCoroutine());
+
+            timer.Start();
+            ghostTimerObject.SetActive(true);
         }
         else if (collision.gameObject.CompareTag("Ant"))
         {
@@ -411,7 +485,6 @@ public class PacStudentController : MonoBehaviour
                     gameObject.transform.position = new Vector2(-7.5f, 3.5f);
                 }
             }
-            
         }
     }
 
