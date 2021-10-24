@@ -12,6 +12,7 @@ TagManager:
   - NormalAnt
   - GhostTimer
   - Score
+  - GameTimer
   layers:
   - Default
   - TransparentFX

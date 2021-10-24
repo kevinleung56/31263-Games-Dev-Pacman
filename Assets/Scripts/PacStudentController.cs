@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Diagnostics;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -23,7 +22,11 @@ public class PacStudentController : MonoBehaviour
 
     private Tweener tweener;
     private GameObject scoreObject;
+    private GameObject ghostTimerObject;
+    private GameObject gameTimerObject;
+    private Text gameTimer;
     private Text score;
+    private Stopwatch watch;
     private KeyCode? lastInput;
     private KeyCode? currentInput;
     private enum Directions { Up, Down, Left, Right };
@@ -32,7 +35,15 @@ public class PacStudentController : MonoBehaviour
     {
         tweener = GetComponent<Tweener>();
         scoreObject = GameObject.FindGameObjectWithTag("Score");
+        ghostTimerObject = GameObject.FindGameObjectWithTag("GhostTimer");
+        gameTimerObject = GameObject.FindGameObjectWithTag("GameTimer");
+
         score = scoreObject.GetComponent<Text>();
+        gameTimer = gameTimerObject.GetComponent<Text>();
+        watch = new Stopwatch();
+        watch.Start();
+
+        ghostTimerObject.SetActive(false);
     }
 
     void AddTweenToPosition(Vector3 position, float duration)
@@ -199,6 +210,12 @@ public class PacStudentController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        var currentTime = watch.Elapsed;
+        var currentTimeFormatted = string.Format("{0:00}:{1:00}:{2:00}", currentTime.Minutes, currentTime.Seconds, currentTime.Milliseconds / 10);
+
+        gameTimer.text = currentTimeFormatted;
+
+
         if ((Vector2)pacStudent.transform.position == new Vector2(19.5f, -9.5f)) // Right tunnel
         {
             pacStudent.transform.position = new Vector2(-8.5f, -9.5f); // Teleportation
@@ -331,7 +348,7 @@ public class PacStudentController : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        Debug.Log("Collision Enter: " + collision.gameObject + " : " + collision.transform.position);
+        //UnityEngine.Debug.Log("Collision Enter: " + collision.gameObject + " : " + collision.transform.position);
         if (collision.gameObject.CompareTag("Pellet"))
         {
             // Add 10 to score
