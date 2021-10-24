@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PacStudentController : MonoBehaviour
 {
@@ -21,6 +22,8 @@ public class PacStudentController : MonoBehaviour
     private ParticleSystem dust;
 
     private Tweener tweener;
+    private GameObject scoreObject;
+    private Text score;
     private KeyCode? lastInput;
     private KeyCode? currentInput;
     private enum Directions { Up, Down, Left, Right };
@@ -28,6 +31,8 @@ public class PacStudentController : MonoBehaviour
     void Start()
     {
         tweener = GetComponent<Tweener>();
+        scoreObject = GameObject.FindGameObjectWithTag("Score");
+        score = scoreObject.GetComponent<Text>();
     }
 
     void AddTweenToPosition(Vector3 position, float duration)
@@ -330,11 +335,13 @@ public class PacStudentController : MonoBehaviour
         if (collision.gameObject.CompareTag("Pellet"))
         {
             // Add 10 to score
+            score.text = (int.Parse(score.text) + 10).ToString();
             Destroy(collision.gameObject);
         }
         else if (collision.gameObject.CompareTag("Cherry"))
         {
             // Add 100 to score
+            score.text = (int.Parse(score.text) + 100).ToString();
             Destroy(collision.gameObject);
         }
         else if (collision.gameObject.CompareTag("PowerPellet"))
