@@ -14,6 +14,7 @@ TagManager:
   - Score
   - GameTimer
   - Health
+  - ScaredAnt
   layers:
   - Default
   - TransparentFX
