@@ -14,6 +14,7 @@ TagManager:
   - GameTimer
   - Health
   - Ant
+  - GhostTimerLabel
   layers:
   - Default
   - TransparentFX

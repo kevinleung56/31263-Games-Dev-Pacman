@@ -25,6 +25,7 @@ public class PacStudentController : MonoBehaviour
 
     private Tweener tweener;
     private GameObject scoreObject;
+    private GameObject ghostTimerLabelObject;
     private GameObject ghostTimerObject;
     private GameObject gameTimerObject;
     private List<GameObject> healthObjects;
@@ -43,6 +44,7 @@ public class PacStudentController : MonoBehaviour
     {
         tweener = GetComponent<Tweener>();
         scoreObject = GameObject.FindGameObjectWithTag("Score");
+        ghostTimerLabelObject = GameObject.FindGameObjectWithTag("GhostTimerLabel");
         ghostTimerObject = GameObject.FindGameObjectWithTag("GhostTimer");
         gameTimerObject = GameObject.FindGameObjectWithTag("GameTimer");
         healthObjects = GameObject.FindGameObjectsWithTag("Health").ToList();
@@ -54,7 +56,7 @@ public class PacStudentController : MonoBehaviour
         timer = new Stopwatch();
         watch.Start();
 
-        ghostTimerObject.SetActive(false);
+        ghostTimerLabelObject.SetActive(false);
     }
 
     void AddTweenToPosition(Vector3 position, float duration)
@@ -231,7 +233,7 @@ public class PacStudentController : MonoBehaviour
             ghostTimer.text = timeLeftTimer.ToString();
             if (timeLeftTimer <= 0)
             {
-                ghostTimerObject.SetActive(false);
+                ghostTimerLabelObject.SetActive(false);
                 timer.Stop();
                 timer.Reset();
             }
@@ -453,7 +455,7 @@ public class PacStudentController : MonoBehaviour
             StartCoroutine(SetAllAntsScaredCoroutine());
 
             timer.Start();
-            ghostTimerObject.SetActive(true);
+            ghostTimerLabelObject.SetActive(true);
             Destroy(collision.gameObject);
         }
         else if (collision.gameObject.CompareTag("Ant"))
