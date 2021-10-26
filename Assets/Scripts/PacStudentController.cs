@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using Debug = UnityEngine.Debug;
 
 public class PacStudentController : MonoBehaviour
 {
@@ -410,6 +411,42 @@ public class PacStudentController : MonoBehaviour
         }
     }
 
+    void SetAntState(Animator antAnimator, GhostState state)
+    {
+        switch (state)
+        {
+            case GhostState.Walking:
+                antAnimator.SetBool("AntIsDeadParam", false);
+                antAnimator.SetBool("AntIsRecoveringParam", false);
+                antAnimator.SetBool("AntIsScaredParam", false);
+
+                break;
+            case GhostState.Scared:
+                antAnimator.SetBool("AntIsDeadParam", false);
+                antAnimator.SetBool("AntIsRecoveringParam", false);
+                antAnimator.SetBool("AntIsScaredParam", true);
+
+                break;
+
+            case GhostState.Recovering:
+                antAnimator.SetBool("AntIsDeadParam", false);
+                antAnimator.SetBool("AntIsRecoveringParam", true);
+                antAnimator.SetBool("AntIsScaredParam", false);
+
+                break;
+
+            case GhostState.Dead:
+                antAnimator.SetBool("AntIsDeadParam", true);
+                antAnimator.SetBool("AntIsRecoveringParam", false);
+                antAnimator.SetBool("AntIsScaredParam", false);
+
+                break;
+
+            default: break;
+        }
+    }
+
+
     private IEnumerator SetAllAntsScaredCoroutine()
     {
         SetAllAntStates(GhostState.Scared);
@@ -461,13 +498,11 @@ public class PacStudentController : MonoBehaviour
         else if (collision.gameObject.CompareTag("Ant"))
         {
             var animator = collision.gameObject.GetComponent<Animator>();
-            if (animator.GetBool("AntIsScaredParam")) // Ant is scared
+            // Ant is recovering or scared
+            if (animator.GetBool("AntIsScaredParam") || animator.GetBool("AntIsRecoveringParam"))
             {
-
-            }
-            else if (animator.GetBool("AntIsDeadParam")) // Ant is dead
-            {
-
+                score.text = (int.Parse(score.text) + 300).ToString();
+                SetAntState(animator, GhostState.Dead);
             }
             else // Normal ant
             {
@@ -482,10 +517,12 @@ public class PacStudentController : MonoBehaviour
                  * Respawn PacStudent by moving them to the top‐left hand corner,
                  * where they started the game, and wait for player input.*/
 
+                Debug.Log(playerHealth);
+
                 if (playerHealth == 0) // Player is dead
                 {
                     // Play particle effect
-
+                    Debug.Log("Supposed to be dead");
 
                     gameObject.transform.position = new Vector2(-7.5f, 3.5f);
                 }
