@@ -30,6 +30,7 @@ public class PacStudentController : MonoBehaviour
     private List<GameObject> healthObjects;
     private Text gameTimer;
     private Text score;
+    private Text ghostTimer;
     private Stopwatch watch;
     private Stopwatch timer;
     private KeyCode? lastInput;
@@ -47,6 +48,7 @@ public class PacStudentController : MonoBehaviour
         healthObjects = GameObject.FindGameObjectsWithTag("Health").ToList();
 
         score = scoreObject.GetComponent<Text>();
+        ghostTimer = ghostTimerObject.GetComponent<Text>();
         gameTimer = gameTimerObject.GetComponent<Text>();
         watch = new Stopwatch();
         timer = new Stopwatch();
@@ -226,7 +228,7 @@ public class PacStudentController : MonoBehaviour
         if (timer != null && timer.IsRunning)
         {
             var timeLeftTimer = 10 - timer.Elapsed.Seconds;
-
+            ghostTimer.text = timeLeftTimer.ToString();
             if (timeLeftTimer <= 0)
             {
                 ghostTimerObject.SetActive(false);
