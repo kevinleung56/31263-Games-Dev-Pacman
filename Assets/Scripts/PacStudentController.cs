@@ -452,6 +452,7 @@ public class PacStudentController : MonoBehaviour
 
             timer.Start();
             ghostTimerObject.SetActive(true);
+            Destroy(collision.gameObject);
         }
         else if (collision.gameObject.CompareTag("Ant"))
         {
