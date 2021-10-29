@@ -31,9 +31,11 @@ public class CherryController : MonoBehaviour
 
     IEnumerator SpawnCherryCoroutine()
     {
+        yield return new WaitForSeconds(4); // Wait for 3, 2, 1, GO!
+
         while (true)
         {
-            yield return new WaitForSeconds(10);
+            yield return new WaitForSeconds(10f);
 
             StartCoroutine(GenerateCherryAndTween());
         }

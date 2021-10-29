@@ -29,10 +29,13 @@ public class PacStudentController : MonoBehaviour
     private GameObject ghostTimerLabelObject;
     private GameObject ghostTimerObject;
     private GameObject gameTimerObject;
+    private GameObject gameStartObject;
+    private GameObject gameStartLabelObject;
     private List<GameObject> healthObjects;
     private Text gameTimer;
     private Text score;
     private Text ghostTimer;
+    private Text gameStart;
     private Stopwatch watch;
     private Stopwatch timer;
     private KeyCode? lastInput;
@@ -47,12 +50,16 @@ public class PacStudentController : MonoBehaviour
         scoreObject = GameObject.FindGameObjectWithTag("Score");
         ghostTimerLabelObject = GameObject.FindGameObjectWithTag("GhostTimerLabel");
         ghostTimerObject = GameObject.FindGameObjectWithTag("GhostTimer");
+        gameStartLabelObject = GameObject.FindGameObjectWithTag("GameStartLabel");
+        gameStartObject = GameObject.FindGameObjectWithTag("GameStartTimer");
         gameTimerObject = GameObject.FindGameObjectWithTag("GameTimer");
         healthObjects = GameObject.FindGameObjectsWithTag("Health").ToList();
 
         score = scoreObject.GetComponent<Text>();
         ghostTimer = ghostTimerObject.GetComponent<Text>();
         gameTimer = gameTimerObject.GetComponent<Text>();
+        gameStart = gameStartObject.GetComponent<Text>();
+
         watch = new Stopwatch();
         timer = new Stopwatch();
         watch.Start();
@@ -225,6 +232,23 @@ public class PacStudentController : MonoBehaviour
     void Update()
     {
         var currentTime = watch.Elapsed;
+        while (currentTime.Seconds <= 4)
+        {
+            var gameStartLeft = 3 - currentTime.Seconds;
+
+            if (gameStartLeft < 0)
+            {
+                gameStart.text = "GO!";
+            }
+            else
+            {
+                gameStart.text = gameStartLeft.ToString();
+            }
+
+        }
+
+        gameStartLabelObject.SetActive(false);
+
         var currentTimeFormatted = string.Format("{0:00}:{1:00}:{2:00}", currentTime.Minutes, currentTime.Seconds, currentTime.Milliseconds / 10);
         gameTimer.text = currentTimeFormatted;
 
@@ -446,7 +470,6 @@ public class PacStudentController : MonoBehaviour
         }
     }
 
-
     private IEnumerator SetAllAntsScaredCoroutine()
     {
         SetAllAntStates(GhostState.Scared);
@@ -459,6 +482,7 @@ public class PacStudentController : MonoBehaviour
 
         SetAllAntStates(GhostState.Walking);
     }
+
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
