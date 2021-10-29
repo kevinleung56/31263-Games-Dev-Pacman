@@ -69,7 +69,7 @@ public class PacStudentController : MonoBehaviour
         gameStartRunningTimer.Start();
 
         ghostTimerLabelObject.SetActive(false);
-
+        gameTimer.text = "00:00:00";
         StartCoroutine(StartCountdownCoroutine());
     }
 
@@ -261,6 +261,17 @@ public class PacStudentController : MonoBehaviour
         }
     }
 
+    void UpdateGameRunningTimer()
+    {
+        if (gameRunningTimer.IsRunning)
+        {
+            var currentTime = gameRunningTimer.Elapsed;
+            var currentTimeFormatted = string.Format("{0:00}:{1:00}:{2:00}", currentTime.Minutes, currentTime.Seconds, currentTime.Milliseconds / 10);
+            gameTimer.text = currentTimeFormatted;
+        }
+    }
+
+
     IEnumerator StartCountdownCoroutine()
     {
         while (gameStartRunningTimer.IsRunning)
@@ -292,19 +303,10 @@ public class PacStudentController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (gameRunningTimer.IsRunning)
-        {
-            var currentTime = gameRunningTimer.Elapsed;
-            var currentTimeFormatted = string.Format("{0:00}:{1:00}:{2:00}", currentTime.Minutes, currentTime.Seconds, currentTime.Milliseconds / 10);
-            gameTimer.text = currentTimeFormatted;
-        }
-        else
-        {
-            gameTimer.text = "00:00:00";
-        }
 
         if (gameStarted)
         {
+            UpdateGameRunningTimer();
             CheckForGhostTimerIfNeeded();
             TeleportTunnelIfNeeded();
             GetInput();
