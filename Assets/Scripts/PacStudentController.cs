@@ -42,6 +42,8 @@ public class PacStudentController : MonoBehaviour
     private KeyCode? lastInput;
     private KeyCode? currentInput;
     private int playerHealth = 3;
+    public static bool gameStarted = false;
+
     private enum Directions { Up, Down, Left, Right };
     private enum GhostState { Walking, Scared, Recovering, Dead };
 
@@ -67,6 +69,8 @@ public class PacStudentController : MonoBehaviour
         gameStartRunningTimer.Start();
 
         ghostTimerLabelObject.SetActive(false);
+
+        StartCoroutine(StartCountdownCoroutine());
     }
 
     void AddTweenToPosition(Vector3 position, float duration)
@@ -230,6 +234,33 @@ public class PacStudentController : MonoBehaviour
         return true;
     }
 
+    void TeleportTunnelIfNeeded()
+    {
+        if ((Vector2)pacStudent.transform.position == new Vector2(19.5f, -9.5f)) // Right tunnel
+        {
+            pacStudent.transform.position = new Vector2(-8.5f, -9.5f); // Teleportation
+        }
+        else if ((Vector2)pacStudent.transform.position == new Vector2(-9.5f, -9.5f)) // Left tunnel
+        {
+            pacStudent.transform.position = new Vector2(18.5f, -9.5f); // Teleportation
+        }
+    }
+
+    void CheckForGhostTimerIfNeeded()
+    {
+        if (ghostRunningTimer != null && ghostRunningTimer.IsRunning)
+        {
+            var timeLeftTimer = 10 - ghostRunningTimer.Elapsed.Seconds;
+            ghostTimer.text = timeLeftTimer.ToString();
+            if (timeLeftTimer <= 0)
+            {
+                ghostTimerLabelObject.SetActive(false);
+                ghostRunningTimer.Stop();
+                ghostRunningTimer.Reset();
+            }
+        }
+    }
+
     IEnumerator StartCountdownCoroutine()
     {
         while (gameStartRunningTimer.IsRunning)
@@ -255,13 +286,12 @@ public class PacStudentController : MonoBehaviour
 
         gameStartLabelObject.SetActive(false);
         gameRunningTimer.Start();
+        gameStarted = true;
     }
 
     // Update is called once per frame
     void Update()
     {
-        StartCoroutine(StartCountdownCoroutine());
-
         if (gameRunningTimer.IsRunning)
         {
             var currentTime = gameRunningTimer.Elapsed;
@@ -273,28 +303,17 @@ public class PacStudentController : MonoBehaviour
             gameTimer.text = "00:00:00";
         }
 
-
-        if (ghostRunningTimer != null && ghostRunningTimer.IsRunning)
+        if (gameStarted)
         {
-            var timeLeftTimer = 10 - ghostRunningTimer.Elapsed.Seconds;
-            ghostTimer.text = timeLeftTimer.ToString();
-            if (timeLeftTimer <= 0)
-            {
-                ghostTimerLabelObject.SetActive(false);
-                ghostRunningTimer.Stop();
-                ghostRunningTimer.Reset();
-            }
+            CheckForGhostTimerIfNeeded();
+            TeleportTunnelIfNeeded();
+            GetInput();
         }
 
-        if ((Vector2)pacStudent.transform.position == new Vector2(19.5f, -9.5f)) // Right tunnel
-        {
-            pacStudent.transform.position = new Vector2(-8.5f, -9.5f); // Teleportation
-        }
-        else if ((Vector2)pacStudent.transform.position == new Vector2(-9.5f, -9.5f)) // Left tunnel
-        {
-            pacStudent.transform.position = new Vector2(18.5f, -9.5f); // Teleportation
-        }
+    }
 
+    void GetInput()
+    {
         if (Input.GetKey(KeyCode.A))
         {
             MoveLeft();
@@ -315,13 +334,9 @@ public class PacStudentController : MonoBehaviour
             MoveDown();
             lastInput = KeyCode.S;
         }
-        //else if (Input.GetKey(KeyCode.Space))
-        //{
-        //    animatorController.SetBool("WormIsDeadParam", !animatorController.GetBool("WormIsDeadParam"));
-        //}
         else if (!tweener.TweenExists(pacStudent.transform) && lastInput != null)
         {
-            switch(lastInput)
+            switch (lastInput)
             {
                 case KeyCode.A:
                     if (MoveLeft())
@@ -557,8 +572,7 @@ public class PacStudentController : MonoBehaviour
                 {
                     // Play particle effect
                     Debug.Log("Supposed to be dead");
-
-                    gameObject.transform.position = new Vector2(-7.5f, 3.5f);
+                    pacStudent.transform.position = new Vector2(-7.5f, 3.5f);
                 }
             }
         }
