@@ -36,8 +36,9 @@ public class PacStudentController : MonoBehaviour
     private Text score;
     private Text ghostTimer;
     private Text gameStart;
-    private Stopwatch watch;
-    private Stopwatch timer;
+    private Stopwatch gameRunningTimer;
+    private Stopwatch gameStartRunningTimer;
+    private Stopwatch ghostRunningTimer;
     private KeyCode? lastInput;
     private KeyCode? currentInput;
     private int playerHealth = 3;
@@ -60,9 +61,10 @@ public class PacStudentController : MonoBehaviour
         gameTimer = gameTimerObject.GetComponent<Text>();
         gameStart = gameStartObject.GetComponent<Text>();
 
-        watch = new Stopwatch();
-        timer = new Stopwatch();
-        watch.Start();
+        gameRunningTimer = new Stopwatch();
+        ghostRunningTimer = new Stopwatch();
+        gameStartRunningTimer = new Stopwatch();
+        gameStartRunningTimer.Start();
 
         ghostTimerLabelObject.SetActive(false);
     }
@@ -228,39 +230,59 @@ public class PacStudentController : MonoBehaviour
         return true;
     }
 
-    // Update is called once per frame
-    void Update()
+    IEnumerator StartCountdownCoroutine()
     {
-        var currentTime = watch.Elapsed;
-        while (currentTime.Seconds <= 4)
+        while (gameStartRunningTimer.IsRunning)
         {
-            var gameStartLeft = 3 - currentTime.Seconds;
+            gameStart.text = "3";
 
-            if (gameStartLeft < 0)
-            {
-                gameStart.text = "GO!";
-            }
-            else
-            {
-                gameStart.text = gameStartLeft.ToString();
-            }
+            yield return new WaitForSeconds(1f);
 
+            gameStart.text = "2";
+
+            yield return new WaitForSeconds(1f);
+
+            gameStart.text = "1";
+
+            yield return new WaitForSeconds(1f);
+
+            gameStart.text = "GO!";
+
+            yield return new WaitForSeconds(1f);
+
+            gameStartRunningTimer.Stop();
         }
 
         gameStartLabelObject.SetActive(false);
+        gameRunningTimer.Start();
+    }
 
-        var currentTimeFormatted = string.Format("{0:00}:{1:00}:{2:00}", currentTime.Minutes, currentTime.Seconds, currentTime.Milliseconds / 10);
-        gameTimer.text = currentTimeFormatted;
+    // Update is called once per frame
+    void Update()
+    {
+        StartCoroutine(StartCountdownCoroutine());
 
-        if (timer != null && timer.IsRunning)
+        if (gameRunningTimer.IsRunning)
         {
-            var timeLeftTimer = 10 - timer.Elapsed.Seconds;
+            var currentTime = gameRunningTimer.Elapsed;
+            var currentTimeFormatted = string.Format("{0:00}:{1:00}:{2:00}", currentTime.Minutes, currentTime.Seconds, currentTime.Milliseconds / 10);
+            gameTimer.text = currentTimeFormatted;
+        }
+        else
+        {
+            gameTimer.text = "00:00:00";
+        }
+
+
+        if (ghostRunningTimer != null && ghostRunningTimer.IsRunning)
+        {
+            var timeLeftTimer = 10 - ghostRunningTimer.Elapsed.Seconds;
             ghostTimer.text = timeLeftTimer.ToString();
             if (timeLeftTimer <= 0)
             {
                 ghostTimerLabelObject.SetActive(false);
-                timer.Stop();
-                timer.Reset();
+                ghostRunningTimer.Stop();
+                ghostRunningTimer.Reset();
             }
         }
 
@@ -501,21 +523,9 @@ public class PacStudentController : MonoBehaviour
         }
         else if (collision.gameObject.CompareTag("PowerPellet"))
         {
-            /* 
-             * Change the Ghost animator state to Scared.
-             * 
-             * Change the background music to match this state.
-             * 
-             * Start a timer for 10 seconds. Make the Ghost Timer UI element visible and set it to this timer.
-             * 
-             * With 3 seconds left to go on this timer, change the Ghosts to the Recovering state.
-             * 
-             * After 10 seconds have passed, set the Ghosts back to their Walking states
-             * and hide the Ghost Timer UI element.*/
-
             StartCoroutine(SetAllAntsScaredCoroutine());
 
-            timer.Start();
+            ghostRunningTimer.Start();
             ghostTimerLabelObject.SetActive(true);
             Destroy(collision.gameObject);
         }

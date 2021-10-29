@@ -15,8 +15,8 @@ TagManager:
   - Health
   - Ant
   - GhostTimerLabel
-  - GameStart
   - GameStartLabel
+  - GameStartTimer
   layers:
   - Default
   - TransparentFX
