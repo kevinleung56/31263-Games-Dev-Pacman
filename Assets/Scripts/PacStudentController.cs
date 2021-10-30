@@ -44,8 +44,8 @@ public class PacStudentController : MonoBehaviour
     private KeyCode? lastInput;
     private KeyCode? currentInput;
     private int playerHealth = 3;
-    public static bool gameStarted = false;
-    public static bool gameOver = false;
+    public bool gameStarted = false;
+    public bool gameOver = false;
     private int pelletsLeft;
 
     private enum Directions { Up, Down, Left, Right };
