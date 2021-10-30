@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Debug = UnityEngine.Debug;
 
@@ -31,6 +32,7 @@ public class PacStudentController : MonoBehaviour
     private GameObject gameTimerObject;
     private GameObject gameStartObject;
     private GameObject gameStartLabelObject;
+    private GameObject gameOverObject;
     private List<GameObject> healthObjects;
     private Text gameTimer;
     private Text score;
@@ -43,6 +45,8 @@ public class PacStudentController : MonoBehaviour
     private KeyCode? currentInput;
     private int playerHealth = 3;
     public static bool gameStarted = false;
+    public static bool gameOver = false;
+    private int pelletsLeft;
 
     private enum Directions { Up, Down, Left, Right };
     private enum GhostState { Walking, Scared, Recovering, Dead };
@@ -57,6 +61,7 @@ public class PacStudentController : MonoBehaviour
         gameStartObject = GameObject.FindGameObjectWithTag("GameStartTimer");
         gameTimerObject = GameObject.FindGameObjectWithTag("GameTimer");
         healthObjects = GameObject.FindGameObjectsWithTag("Health").ToList();
+        gameOverObject = GameObject.FindGameObjectWithTag("GameOver");
 
         score = scoreObject.GetComponent<Text>();
         ghostTimer = ghostTimerObject.GetComponent<Text>();
@@ -68,6 +73,7 @@ public class PacStudentController : MonoBehaviour
         gameStartRunningTimer = new Stopwatch();
         gameStartRunningTimer.Start();
 
+        gameOverObject.SetActive(false);
         ghostTimerLabelObject.SetActive(false);
         gameTimer.text = "00:00:00";
         StartCoroutine(StartCountdownCoroutine());
@@ -271,6 +277,49 @@ public class PacStudentController : MonoBehaviour
         }
     }
 
+    void CheckGameOver(bool gameOverOverride = false)
+    {
+        if (pelletsLeft == 0 || playerHealth == 0 || gameOverOverride)
+        {
+            ghostTimerObject.SetActive(false);
+            gameOverObject.SetActive(true);
+            gameStarted = false;
+            gameOver = true;
+            gameRunningTimer.Stop();
+
+            StartCoroutine(EndGameCoroutine());
+        }
+    }
+
+    IEnumerator EndGameCoroutine()
+    {
+        while (gameOver)
+        {
+            yield return new WaitForSeconds(3f);
+
+            // Save player prefs
+            var existingHighscore = PlayerPrefs.GetInt("highscore", -1);
+            var existingTime = PlayerPrefs.GetInt("time", -1);
+            var currentHighscore = int.Parse(score.text);
+            var currentTime = (int)gameRunningTimer.Elapsed.TotalSeconds;
+
+
+            if (existingHighscore == -1 || existingTime == -1)
+            {
+                PlayerPrefs.SetInt("highscore", currentHighscore);
+                PlayerPrefs.SetInt("time", currentTime);
+            }
+            else if (currentHighscore > existingHighscore || 
+                (currentHighscore == existingHighscore && currentTime < existingTime))
+            {
+                PlayerPrefs.SetInt("highscore", currentHighscore);
+                PlayerPrefs.SetInt("time", currentTime);
+            }
+
+            gameOver = false;
+            SceneManager.LoadSceneAsync(1);
+        }
+    }
 
     IEnumerator StartCountdownCoroutine()
     {
@@ -297,21 +346,22 @@ public class PacStudentController : MonoBehaviour
 
         gameStartLabelObject.SetActive(false);
         gameRunningTimer.Start();
+        var pellets = GameObject.FindGameObjectsWithTag("Pellet");
+        pelletsLeft = pellets.Length;
         gameStarted = true;
     }
 
     // Update is called once per frame
     void Update()
     {
-
         if (gameStarted)
         {
+            CheckGameOver();
             UpdateGameRunningTimer();
             CheckForGhostTimerIfNeeded();
             TeleportTunnelIfNeeded();
             GetInput();
         }
-
     }
 
     void GetInput()
@@ -530,6 +580,7 @@ public class PacStudentController : MonoBehaviour
         {
             // Add 10 to score
             score.text = (int.Parse(score.text) + 10).ToString();
+            pelletsLeft--;
             Destroy(collision.gameObject);
         }
         else if (collision.gameObject.CompareTag("Cherry"))

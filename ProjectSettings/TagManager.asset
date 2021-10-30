@@ -17,6 +17,7 @@ TagManager:
   - GhostTimerLabel
   - GameStartLabel
   - GameStartTimer
+  - GameOver
   layers:
   - Default
   - TransparentFX
