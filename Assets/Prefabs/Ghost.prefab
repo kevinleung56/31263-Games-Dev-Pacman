@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 760651556184117666}
   - component: {fileID: -6790605465797460176}
   - component: {fileID: -7241959799746859315}
+  - component: {fileID: -999292096996989612}
   m_Layer: 0
   m_Name: Ghost
   m_TagString: Ant
@@ -147,6 +148,18 @@ MonoBehaviour:
   spriteRenderer: {fileID: 760651556184117667}
   animatorController: {fileID: 760651556184117666}
   dust: {fileID: 3720454329597970366}
+--- !u!114 &-999292096996989612
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 760651556184117668}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b2d51e0e7e4f3f04192d9ed00f9423bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &4895215044013897273
 PrefabInstance:
   m_ObjectHideFlags: 0

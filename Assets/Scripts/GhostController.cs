@@ -26,6 +26,7 @@ public class GhostController : MonoBehaviour
     private PacStudentController pacStudentController;
     private bool isDead = false;
     private bool isScared = false;
+    private bool gameStarted = false;
     private int ghostType = -1;
 
     private enum Directions { Up, Down, Left, Right };
@@ -34,9 +35,10 @@ public class GhostController : MonoBehaviour
     {
         yield return new WaitForSeconds(4f); // Wait for 3, 2, 1, GO!
 
-        pacStudent = GameObject.FindGameObjectWithTag("Worm");
+        pacStudent = GameObject.FindGameObjectWithTag("Player");
         pacStudentPosition = pacStudent.transform.position;
         pacStudentController = pacStudent.GetComponent<PacStudentController>();
+        gameStarted = true;
     }
 
 
@@ -44,7 +46,7 @@ public class GhostController : MonoBehaviour
     {
         tweener = GetComponent<Tweener>();
         StartCoroutine(StartUpCoroutine());
-        ghostType = 1; // Get this from the HUD canvas
+        ghostType = int.Parse(ghost.transform.GetChild(0).gameObject.name.Split(new string[] { "Ghost", "Canvas" }, System.StringSplitOptions.None)[1]);
     }
 
     void AddTweenToPosition(Vector3 position, float duration)
@@ -211,7 +213,7 @@ public class GhostController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!pacStudentController.gameOver)
+        if (gameStarted && !pacStudentController.gameOver)
         {
             if (!isScared && !isDead)
             {
@@ -232,7 +234,68 @@ public class GhostController : MonoBehaviour
         }
     }
 
-    Directions Ghost1Behaviour()
+    Directions? Ghost1Behaviour()
+    {
+        var list = new List<Directions>();
+        var currentPosition = ghost.transform.position;
+        var headingVector = pacStudent.transform.position - currentPosition;
+        var distanceToPacstudent = headingVector.magnitude;
+        //var distanceIfGoingUp = (pacStudent.transform.position -
+        //    (currentPosition + new Vector3(0.0f, 1.0f, 1.0f))).magnitude >= distanceToPacstudent;
+        //var distanceIfGoingLeft = (pacStudent.transform.position -
+        //    (currentPosition + new Vector3(-1.0f, 0.0f, 0.0f))).magnitude >= distanceToPacstudent;
+        //var distanceIfGoingRight = (pacStudent.transform.position -
+        //    (currentPosition + new Vector3(1.0f, 0.0f, 0.0f))).magnitude >= distanceToPacstudent;
+        //var distanceIfGoingDown = (pacStudent.transform.position -
+        //    (currentPosition + new Vector3(0.0f, -1.0f, 0.0f))).magnitude >= distanceToPacstudent; 
+        if ((pacStudent.transform.position -
+             (currentPosition + new Vector3(0.0f, 1.0f, 1.0f))).magnitude <= distanceToPacstudent)
+        {
+            list.Add(Directions.Up);
+        }
+        else if ((pacStudent.transform.position -
+            (currentPosition + new Vector3(-1.0f, 0.0f, 0.0f))).magnitude <= distanceToPacstudent)
+        {
+            list.Add(Directions.Left);
+        }
+        if ((pacStudent.transform.position -
+            (currentPosition + new Vector3(1.0f, 0.0f, 0.0f))).magnitude <= distanceToPacstudent)
+        {
+            list.Add(Directions.Right);
+        }
+        if ((pacStudent.transform.position -
+            (currentPosition + new Vector3(0.0f, -1.0f, 0.0f))).magnitude <= distanceToPacstudent)
+        {
+            list.Add(Directions.Down);
+        }
+        
+        if (list.Count == 0)
+        {
+            return null;
+        }
+
+        var randomValidDirectionIndex = Random.Range(0, list.Count);
+        return list[randomValidDirectionIndex];
+
+        //if (distanceIfGoingUp >= distanceToPacstudent)
+        //{
+        //    return Directions.Up;
+        //}
+        //else if (distanceIfGoingLeft >= distanceToPacstudent)
+        //{
+        //    return Directions.Left;
+        //}
+        //else if (distanceIfGoingRight >= distanceToPacstudent)
+        //{
+        //    return Directions.Right;
+        //}
+        //else if (distanceIfGoingDown >= distanceToPacstudent)
+        //{
+        //    return Directions.Down;
+        //}
+    }
+
+    Directions? Ghost2Behaviour()
     {
         var list = new List<Directions>();
         var currentPosition = ghost.transform.position;
@@ -267,60 +330,9 @@ public class GhostController : MonoBehaviour
             list.Add(Directions.Down);
         }
 
-        var randomValidDirectionIndex = Random.Range(0, list.Count);
-        return list[randomValidDirectionIndex];
-
-        //if (distanceIfGoingUp >= distanceToPacstudent)
-        //{
-        //    return Directions.Up;
-        //}
-        //else if (distanceIfGoingLeft >= distanceToPacstudent)
-        //{
-        //    return Directions.Left;
-        //}
-        //else if (distanceIfGoingRight >= distanceToPacstudent)
-        //{
-        //    return Directions.Right;
-        //}
-        //else if (distanceIfGoingDown >= distanceToPacstudent)
-        //{
-        //    return Directions.Down;
-        //}
-    }
-
-    Directions Ghost2Behaviour()
-    {
-        var list = new List<Directions>();
-        var currentPosition = ghost.transform.position;
-        var headingVector = pacStudent.transform.position - currentPosition;
-        var distanceToPacstudent = headingVector.magnitude;
-        //var distanceIfGoingUp = (pacStudent.transform.position -
-        //    (currentPosition + new Vector3(0.0f, 1.0f, 1.0f))).magnitude >= distanceToPacstudent;
-        //var distanceIfGoingLeft = (pacStudent.transform.position -
-        //    (currentPosition + new Vector3(-1.0f, 0.0f, 0.0f))).magnitude >= distanceToPacstudent;
-        //var distanceIfGoingRight = (pacStudent.transform.position -
-        //    (currentPosition + new Vector3(1.0f, 0.0f, 0.0f))).magnitude >= distanceToPacstudent;
-        //var distanceIfGoingDown = (pacStudent.transform.position -
-        //    (currentPosition + new Vector3(0.0f, -1.0f, 0.0f))).magnitude >= distanceToPacstudent; 
-        if ((pacStudent.transform.position -
-             (currentPosition + new Vector3(0.0f, 1.0f, 1.0f))).magnitude <= distanceToPacstudent)
+        if (list.Count == 0)
         {
-            list.Add(Directions.Up);
-        }
-        else if ((pacStudent.transform.position -
-            (currentPosition + new Vector3(-1.0f, 0.0f, 0.0f))).magnitude <= distanceToPacstudent)
-        {
-            list.Add(Directions.Left);
-        }
-        if ((pacStudent.transform.position -
-            (currentPosition + new Vector3(1.0f, 0.0f, 0.0f))).magnitude <= distanceToPacstudent)
-        {
-            list.Add(Directions.Right);
-        }
-        if ((pacStudent.transform.position -
-            (currentPosition + new Vector3(0.0f, -1.0f, 0.0f))).magnitude >= distanceToPacstudent)
-        {
-            list.Add(Directions.Down);
+            return null;
         }
 
         var randomValidDirectionIndex = Random.Range(0, list.Count);
@@ -372,7 +384,7 @@ public class GhostController : MonoBehaviour
         return null;
     }
 
-    void MoveGhost(Directions nextMove)
+    void MoveGhost(Directions? nextMove)
     {
         if (!tweener.TweenExists(ghost.transform))
         {
