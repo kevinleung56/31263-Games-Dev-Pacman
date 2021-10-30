@@ -14,8 +14,8 @@ public class GhostController : MonoBehaviour
     [SerializeField]
     private Animator animatorController;
 
-    [SerializeField]
-    private AudioSource audioOnMoveNoPellet;
+    //[SerializeField]
+    //private AudioSource audioOnMoveNoPellet;
 
     [SerializeField]
     private ParticleSystem dust;
@@ -55,7 +55,7 @@ public class GhostController : MonoBehaviour
     void OnGhostMove()
     {
         ghost.transform.rotation = Quaternion.identity;
-        audioOnMoveNoPellet.Play();
+        //audioOnMoveNoPellet.Play();
         CreateDustTrail();
     }
 
