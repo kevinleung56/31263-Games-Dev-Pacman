@@ -28,6 +28,7 @@ public class GhostController : MonoBehaviour
     private bool isScared = false;
     private bool gameStarted = false;
     private int ghostType = -1;
+    private Directions lastDirection;
 
     private enum Directions { Up, Down, Left, Right };
 
@@ -251,22 +252,34 @@ public class GhostController : MonoBehaviour
         if ((pacStudent.transform.position -
              (currentPosition + new Vector3(0.0f, 1.0f, 1.0f))).magnitude <= distanceToPacstudent)
         {
-            list.Add(Directions.Up);
+            if (lastDirection != Directions.Up)
+            {
+                list.Add(Directions.Up);
+            }
         }
         else if ((pacStudent.transform.position -
             (currentPosition + new Vector3(-1.0f, 0.0f, 0.0f))).magnitude <= distanceToPacstudent)
         {
-            list.Add(Directions.Left);
+            if (lastDirection != Directions.Left)
+            {
+                list.Add(Directions.Left);
+            }
         }
         if ((pacStudent.transform.position -
             (currentPosition + new Vector3(1.0f, 0.0f, 0.0f))).magnitude <= distanceToPacstudent)
         {
-            list.Add(Directions.Right);
+            if (lastDirection != Directions.Right)
+            {
+                list.Add(Directions.Right);
+            }
         }
         if ((pacStudent.transform.position -
             (currentPosition + new Vector3(0.0f, -1.0f, 0.0f))).magnitude <= distanceToPacstudent)
         {
-            list.Add(Directions.Down);
+            if (lastDirection != Directions.Down)
+            {
+                list.Add(Directions.Down);
+            }
         }
         
         if (list.Count == 0)
@@ -312,22 +325,34 @@ public class GhostController : MonoBehaviour
         if ((pacStudent.transform.position -
              (currentPosition + new Vector3(0.0f, 1.0f, 1.0f))).magnitude >= distanceToPacstudent)
         {
-            list.Add(Directions.Up);
+            if (lastDirection != Directions.Up)
+            {
+                list.Add(Directions.Up);
+            }
         }
         else if ((pacStudent.transform.position -
             (currentPosition + new Vector3(-1.0f, 0.0f, 0.0f))).magnitude >= distanceToPacstudent)
         {
-            list.Add(Directions.Left);
+            if (lastDirection != Directions.Left)
+            {
+                list.Add(Directions.Left);
+            }
         }
         if ((pacStudent.transform.position -
             (currentPosition + new Vector3(1.0f, 0.0f, 0.0f))).magnitude >= distanceToPacstudent)
         {
-            list.Add(Directions.Right);
+            if (lastDirection != Directions.Right)
+            {
+                list.Add(Directions.Right);
+            }
         }
         if ((pacStudent.transform.position -
             (currentPosition + new Vector3(0.0f, -1.0f, 0.0f))).magnitude >= distanceToPacstudent)
         {
-            list.Add(Directions.Down);
+            if (lastDirection != Directions.Down)
+            {
+                list.Add(Directions.Down);
+            }
         }
 
         if (list.Count == 0)
@@ -363,22 +388,55 @@ public class GhostController : MonoBehaviour
         //var currentPosition = ghost.transform.position;
         //var headingVector = pacStudent.transform.position - currentPosition;
         //var distanceToPacstudent = headingVector.magnitude;
+        Directions? nextMove;
         if (ghostType == 1)
         {
-            MoveGhost(Ghost1Behaviour());
+            if (lastDirection != null) // should be going in one direction until you can't
+            {
+                MoveGhost(lastDirection);
+            }
+            nextMove = Ghost1Behaviour();
+            if (nextMove != null)
+            {
+                MoveGhost(nextMove);
+                lastDirection = (Directions)nextMove;
+            }
         }
         else if (ghostType == 2)
         {
-            MoveGhost(Ghost2Behaviour());
+            nextMove = Ghost2Behaviour();
+            if (nextMove != null)
+            {
+                MoveGhost(nextMove);
+                lastDirection = (Directions)nextMove;
+            }
         }
         else if (ghostType == 3)
         {
-            MoveGhost((Directions)Random.Range(0, 4));
+            nextMove = (Directions)Random.Range(0, 4);
+
+            while (nextMove == lastDirection) // They can't backtrack
+            {
+                nextMove = (Directions)Random.Range(0, 4);
+            }
+
+            lastDirection = (Directions)nextMove;
+
+            MoveGhost(nextMove);
         }
         else if (ghostType == 4)
         {
             // Move clockwise around map
-            MoveGhost((Directions)Random.Range(0, 4));
+            nextMove = (Directions)Random.Range(0, 4);
+
+            while (nextMove == lastDirection) // They can't backtrack
+            {
+                nextMove = (Directions)Random.Range(0, 4);
+            }
+
+            lastDirection = (Directions)nextMove;
+
+            MoveGhost(nextMove);
         }
 
         return null;
