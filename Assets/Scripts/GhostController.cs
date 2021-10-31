@@ -27,6 +27,7 @@ public class GhostController : MonoBehaviour
     private PacStudentController pacStudentController;
     private bool isDead = false;
     private bool isScared = false;
+    private bool isRecovering = false;
     private bool gameStarted = false;
     private int ghostType = -1;
     private Directions? lastMove;
@@ -217,6 +218,10 @@ public class GhostController : MonoBehaviour
     {
         if (gameStarted && !pacStudentController.gameOver)
         {
+            isScared = animatorController.GetBool("AntIsScaredParam");
+            isDead = animatorController.GetBool("AntIsDeadParam");
+            isRecovering = animatorController.GetBool("AntIsRecoveringParam");
+
             pacStudentPosition = pacStudent.transform.position;
             if (!isScared && !isDead)
             {
@@ -234,13 +239,18 @@ public class GhostController : MonoBehaviour
                     }
                 }
             }
-            else if (isScared)
+            else if (isScared || isRecovering)
             {
-
+                var nextMove = Ghost1Behaviour();
+                if (nextMove != null)
+                {
+                    lastMove = (Directions)nextMove;
+                    MoveGhost((Directions)nextMove);
+                }
             }
             else if (isDead)
             {
-
+                // Lerp towards the centre
             }
         }
     }
@@ -326,7 +336,8 @@ public class GhostController : MonoBehaviour
             CheckDistanceToPacstudentIsHigherOrLowerAndCollision(
                 distanceToPacstudent,
                 currentPosition,
-                Directions.Up))
+                Directions.Up,
+                false))
         {
             list.Add(Directions.Up);
         }
@@ -334,7 +345,8 @@ public class GhostController : MonoBehaviour
             CheckDistanceToPacstudentIsHigherOrLowerAndCollision(
                 distanceToPacstudent,
                 currentPosition,
-                Directions.Left))
+                Directions.Left,
+                false))
         {
             list.Add(Directions.Left);
         }
@@ -342,7 +354,8 @@ public class GhostController : MonoBehaviour
             CheckDistanceToPacstudentIsHigherOrLowerAndCollision(
                 distanceToPacstudent,
                 currentPosition,
-                Directions.Right))
+                Directions.Right,
+                false))
         {
             list.Add(Directions.Right);
         }
@@ -350,7 +363,8 @@ public class GhostController : MonoBehaviour
             CheckDistanceToPacstudentIsHigherOrLowerAndCollision(
                 distanceToPacstudent,
                 currentPosition,
-                Directions.Down))
+                Directions.Down,
+                false))
         {
             list.Add(Directions.Down);
         }
@@ -383,8 +397,7 @@ public class GhostController : MonoBehaviour
             CheckDistanceToPacstudentIsHigherOrLowerAndCollision(
                 distanceToPacstudent,
                 currentPosition,
-                Directions.Up,
-                false))
+                Directions.Up))
         {
             list.Add(Directions.Up);
         }
@@ -392,8 +405,7 @@ public class GhostController : MonoBehaviour
             CheckDistanceToPacstudentIsHigherOrLowerAndCollision(
                 distanceToPacstudent,
                 currentPosition,
-                Directions.Left,
-                false))
+                Directions.Left))
         {
             list.Add(Directions.Left);
         }
@@ -401,8 +413,7 @@ public class GhostController : MonoBehaviour
             CheckDistanceToPacstudentIsHigherOrLowerAndCollision(
                 distanceToPacstudent,
                 currentPosition,
-                Directions.Right,
-                false))
+                Directions.Right))
         {
             list.Add(Directions.Right);
         }
@@ -410,8 +421,7 @@ public class GhostController : MonoBehaviour
             CheckDistanceToPacstudentIsHigherOrLowerAndCollision(
                 distanceToPacstudent,
                 currentPosition,
-                Directions.Down,
-                false))
+                Directions.Down))
         {
             list.Add(Directions.Down);
         }
@@ -553,24 +563,6 @@ public class GhostController : MonoBehaviour
             }
         }
     }
-
-    //Directions? GetDirectionToTarget(Vector2 newPosition)
-    //{
-    //    if (!tweener.TweenExists(ghost.transform))
-    //    {
-    //        if (lastMove != null && !IsBlockedByWall((Directions)lastMove))
-    //        // Ants should be going in one direction until they can't
-    //        {
-    //            return (Directions)lastMove;
-    //        }
-    //        else
-    //        {
-    //            return GetDirectionToTarget(newPosition);
-    //        }
-    //    }
-
-    //    return null;
-    //}
 
     void CreateDustTrail()
     {
