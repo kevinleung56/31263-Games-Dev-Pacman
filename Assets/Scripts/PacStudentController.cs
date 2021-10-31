@@ -1,6 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -298,22 +300,26 @@ public class PacStudentController : MonoBehaviour
             yield return new WaitForSeconds(3f);
 
             // Save player prefs
-            var existingHighscore = PlayerPrefs.GetInt("highscore", -1);
-            var existingTime = PlayerPrefs.GetInt("time", -1);
+            var existingHighscore = int.Parse(PlayerPrefs.GetString("highscore", "0"));
+            var existingTime = TimeSpan.ParseExact(PlayerPrefs.GetString("time", "00:00:00"), @"mm\:ss\:ff", CultureInfo.InvariantCulture);
             var currentHighscore = int.Parse(score.text);
             var currentTime = (int)gameRunningTimer.Elapsed.TotalSeconds;
 
+            var firstTime = existingHighscore == 0 || existingTime.TotalSeconds == 0;
+            var newPersonalRecord = currentHighscore > existingHighscore ||
+                (currentHighscore == existingHighscore && currentTime < existingTime.TotalSeconds);
 
-            if (existingHighscore == -1 || existingTime == -1)
+            if (firstTime || newPersonalRecord)
             {
-                PlayerPrefs.SetInt("highscore", currentHighscore);
-                PlayerPrefs.SetInt("time", currentTime);
-            }
-            else if (currentHighscore > existingHighscore || 
-                (currentHighscore == existingHighscore && currentTime < existingTime))
-            {
-                PlayerPrefs.SetInt("highscore", currentHighscore);
-                PlayerPrefs.SetInt("time", currentTime);
+                var currentTimeSpan = gameRunningTimer.Elapsed;
+                var currentTimeFormatted = string.Format(
+                    "{0:00}:{1:00}:{2:00}",
+                    currentTimeSpan.Minutes,
+                    currentTimeSpan.Seconds,
+                    currentTimeSpan.Milliseconds / 10);
+
+                PlayerPrefs.SetString("highscore", score.text);
+                PlayerPrefs.SetString("time", currentTimeFormatted);
             }
 
             gameOver = false;
