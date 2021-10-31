@@ -392,23 +392,16 @@ public class GhostController : MonoBehaviour
 
     void GetOutOfSpawn()
     {
-        Vector3 newPosition = new Vector3(5f, -6.5f);
-        //if (ghost.transform.position.x != 5f)
-        //{
-        //    newPosition = new Vector3(5f, ghost.transform.position.y);
-        //    // Move to the centre of the spawn area
-        //}
-        //else
-        //{
-        //    newPosition = new Vector3(ghost.transform.position.x, -6.5f);
-        //    // Move to top exit of spawn area
-        //}
-
-        var nextMove = GetDirectionToTarget(newPosition);
-
-        if (nextMove != null)
+        Vector3 target = new Vector3(5f, -6.5f);
+        
+        if (!tweener.TweenExists(ghost.transform))
         {
-            MoveGhost(nextMove);
+            var nextMove = GetDirectionToTarget(target);
+
+            if (nextMove != null)
+            {
+                MoveGhost(nextMove);
+            }
         }
     }
 
@@ -462,25 +455,41 @@ public class GhostController : MonoBehaviour
         var currentPosition = ghost.transform.position;
         var distanceToTarget = (target - currentPosition).magnitude;
 
-        if ((target - (currentPosition + new Vector3(0.0f, 1.0f, 1.0f)))
+        if (!IsBlockedByWall(Directions.Up) && 
+            (target - (currentPosition + new Vector3(0.0f, 1.0f, 1.0f)))
             .magnitude <= distanceToTarget)
         {
-            list.Add(Directions.Up);
+            if (lastDirection != Directions.Up)
+            {
+                list.Add(Directions.Up);
+            }
         }
-        else if ((target - (currentPosition + new Vector3(-1.0f, 0.0f, 0.0f)))
+        else if (!IsBlockedByWall(Directions.Left) &&
+            (target - (currentPosition + new Vector3(-1.0f, 0.0f, 0.0f)))
             .magnitude <= distanceToTarget)
         {
-            list.Add(Directions.Left);
+            if (lastDirection != Directions.Left)
+            {
+                list.Add(Directions.Left);
+            }
         }
-        else if ((target - (currentPosition + new Vector3(1.0f, 0.0f, 0.0f)))
+        else if (!IsBlockedByWall(Directions.Right) &&
+            (target - (currentPosition + new Vector3(1.0f, 0.0f, 0.0f)))
             .magnitude <= distanceToTarget)
         {
-            list.Add(Directions.Right);
+            if (lastDirection != Directions.Right)
+            {
+                list.Add(Directions.Right);
+            }
         }
-        else if ((target - (currentPosition + new Vector3(0.0f, -1.0f, 0.0f)))
+        else if (!IsBlockedByWall(Directions.Down) &&
+            (target - (currentPosition + new Vector3(0.0f, -1.0f, 0.0f)))
             .magnitude <= distanceToTarget)
         {
-            list.Add(Directions.Down);
+            if (lastDirection != Directions.Down)
+            {
+                list.Add(Directions.Down);
+            }
         }
 
         if (list.Count == 0)
@@ -515,23 +524,23 @@ public class GhostController : MonoBehaviour
         }
     }
 
-    Directions? GetDirectionToTarget(Vector2 newPosition)
-    {
-        if (!tweener.TweenExists(ghost.transform))
-        {
-            if (lastDirection != null && !IsBlockedByWall((Directions)lastDirection))
-            // Ants should be going in one direction until they can't
-            {
-                return (Directions)lastDirection;
-            }
-            else
-            {
-                return GetDirectionToTarget(newPosition);
-            }
-        }
+    //Directions? GetDirectionToTarget(Vector2 newPosition)
+    //{
+    //    if (!tweener.TweenExists(ghost.transform))
+    //    {
+    //        if (lastDirection != null && !IsBlockedByWall((Directions)lastDirection))
+    //        // Ants should be going in one direction until they can't
+    //        {
+    //            return (Directions)lastDirection;
+    //        }
+    //        else
+    //        {
+    //            return GetDirectionToTarget(newPosition);
+    //        }
+    //    }
 
-        return null;
-    }
+    //    return null;
+    //}
 
     void CreateDustTrail()
     {
