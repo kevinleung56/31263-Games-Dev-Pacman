@@ -476,7 +476,9 @@ public class GhostController : MonoBehaviour
         {
             nextMove = (Directions)Random.Range(0, 4);
 
-            while (IsBlockedByWall((Directions)nextMove)) // Must be move-able direction
+            while (nextMove == lastMove || IsBlockedByWall((Directions)nextMove))
+                // Must be move-able direction and cannot backtrack
+                // Should be able to move back if last resort
             {
                 nextMove = (Directions)Random.Range(0, 4);
             }
