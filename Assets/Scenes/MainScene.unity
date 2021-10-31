@@ -130,10 +130,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1195786967}
     m_Modifications:
-    - target: {fileID: 0}
-      propertyPath: m_RootOrder
-      value: 2
-      objectReference: {fileID: 0}
     - target: {fileID: 760651556184117668, guid: 22f6112bfd490f2408aa4a68c4c02939, type: 3}
       propertyPath: m_Name
       value: Ghost 4
@@ -404,10 +400,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1195786967}
     m_Modifications:
-    - target: {fileID: 0}
-      propertyPath: m_RootOrder
-      value: 2
-      objectReference: {fileID: 0}
     - target: {fileID: 760651556184117668, guid: 22f6112bfd490f2408aa4a68c4c02939, type: 3}
       propertyPath: m_Name
       value: Ghost 3
@@ -2057,10 +2049,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1195786967}
     m_Modifications:
-    - target: {fileID: 0}
-      propertyPath: m_RootOrder
-      value: 2
-      objectReference: {fileID: 0}
     - target: {fileID: 760651556184117668, guid: 22f6112bfd490f2408aa4a68c4c02939, type: 3}
       propertyPath: m_Name
       value: Ghost 2

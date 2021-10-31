@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GhostController : MonoBehaviour
 {
@@ -28,7 +29,7 @@ public class GhostController : MonoBehaviour
     private bool isScared = false;
     private bool gameStarted = false;
     private int ghostType = -1;
-    private Directions lastDirection;
+    private Directions? lastDirection;
 
     private enum Directions { Up, Down, Left, Right };
 
@@ -47,7 +48,7 @@ public class GhostController : MonoBehaviour
     {
         tweener = GetComponent<Tweener>();
         StartCoroutine(StartUpCoroutine());
-        ghostType = int.Parse(ghost.transform.GetChild(0).gameObject.name.Split(new string[] { "Ghost", "Canvas" }, System.StringSplitOptions.None)[1]);
+        ghostType = int.Parse(GetComponentInChildren<Text>().text);
     }
 
     void AddTweenToPosition(Vector3 position, float duration)
@@ -218,10 +219,18 @@ public class GhostController : MonoBehaviour
         {
             if (!isScared && !isDead)
             {
-                var nextMove = GetNextMove();
-                if (nextMove != null)
-                {
-                    MoveGhost((Directions)nextMove);
+                if (CheckGhostIsInSpawn())
+                { // Ghost is just trying to get out of spawn
+                    GetOutOfSpawn();
+                }
+                else
+                { // Ghost is outside of spawn and using ghost-specific logic
+                    var nextMove = GetNextMove();
+                    if (nextMove != null)
+                    {
+                        MoveGhost((Directions)nextMove);
+                        lastDirection = nextMove;
+                    }
                 }
             }
             else if (isScared)
@@ -265,7 +274,7 @@ public class GhostController : MonoBehaviour
                 list.Add(Directions.Left);
             }
         }
-        if ((pacStudent.transform.position -
+        else if ((pacStudent.transform.position -
             (currentPosition + new Vector3(1.0f, 0.0f, 0.0f))).magnitude <= distanceToPacstudent)
         {
             if (lastDirection != Directions.Right)
@@ -273,7 +282,7 @@ public class GhostController : MonoBehaviour
                 list.Add(Directions.Right);
             }
         }
-        if ((pacStudent.transform.position -
+        else if ((pacStudent.transform.position -
             (currentPosition + new Vector3(0.0f, -1.0f, 0.0f))).magnitude <= distanceToPacstudent)
         {
             if (lastDirection != Directions.Down)
@@ -338,7 +347,7 @@ public class GhostController : MonoBehaviour
                 list.Add(Directions.Left);
             }
         }
-        if ((pacStudent.transform.position -
+        else if ((pacStudent.transform.position -
             (currentPosition + new Vector3(1.0f, 0.0f, 0.0f))).magnitude >= distanceToPacstudent)
         {
             if (lastDirection != Directions.Right)
@@ -346,7 +355,7 @@ public class GhostController : MonoBehaviour
                 list.Add(Directions.Right);
             }
         }
-        if ((pacStudent.transform.position -
+        else if ((pacStudent.transform.position -
             (currentPosition + new Vector3(0.0f, -1.0f, 0.0f))).magnitude >= distanceToPacstudent)
         {
             if (lastDirection != Directions.Down)
@@ -381,65 +390,106 @@ public class GhostController : MonoBehaviour
         //}
     }
 
+    void GetOutOfSpawn()
+    {
+        Vector3 newPosition = new Vector3(5f, -6.5f);
+        //if (ghost.transform.position.x != 5f)
+        //{
+        //    newPosition = new Vector3(5f, ghost.transform.position.y);
+        //    // Move to the centre of the spawn area
+        //}
+        //else
+        //{
+        //    newPosition = new Vector3(ghost.transform.position.x, -6.5f);
+        //    // Move to top exit of spawn area
+        //}
+
+        var nextMove = GetDirectionToTarget(newPosition);
+
+        if (nextMove != null)
+        {
+            MoveGhost(nextMove);
+        }
+    }
+
+    bool CheckGhostIsInSpawn()
+    {
+        var position = ghost.transform.position;
+        var isInSpawnXRange = position.x > 1.5 && position.x < 8.5;
+        var isInSpawnYRange = position.y < -7.5 && position.y > -11.5;
+
+        return isInSpawnXRange && isInSpawnYRange;
+    }
 
     Directions? GetNextMove()
     {
-        // Centre of map is (5, -9.5)
-        //var currentPosition = ghost.transform.position;
-        //var headingVector = pacStudent.transform.position - currentPosition;
-        //var distanceToPacstudent = headingVector.magnitude;
-        Directions? nextMove;
+        if (lastDirection != null && !IsBlockedByWall((Directions)lastDirection))
+        // Ants should be going in one direction until they can't
+        {
+            return lastDirection;
+        }
+
+        Directions? nextMove = null;
+
         if (ghostType == 1)
         {
-            if (lastDirection != null) // should be going in one direction until you can't
-            {
-                MoveGhost(lastDirection);
-            }
             nextMove = Ghost1Behaviour();
-            if (nextMove != null)
-            {
-                MoveGhost(nextMove);
-                lastDirection = (Directions)nextMove;
-            }
         }
         else if (ghostType == 2)
         {
             nextMove = Ghost2Behaviour();
-            if (nextMove != null)
-            {
-                MoveGhost(nextMove);
-                lastDirection = (Directions)nextMove;
-            }
         }
         else if (ghostType == 3)
         {
             nextMove = (Directions)Random.Range(0, 4);
 
-            while (nextMove == lastDirection) // They can't backtrack
+            while (IsBlockedByWall((Directions)nextMove)) // Must be move-able direction
             {
                 nextMove = (Directions)Random.Range(0, 4);
             }
-
-            lastDirection = (Directions)nextMove;
-
-            MoveGhost(nextMove);
         }
         else if (ghostType == 4)
         {
             // Move clockwise around map
-            nextMove = (Directions)Random.Range(0, 4);
-
-            while (nextMove == lastDirection) // They can't backtrack
-            {
-                nextMove = (Directions)Random.Range(0, 4);
-            }
-
-            lastDirection = (Directions)nextMove;
-
-            MoveGhost(nextMove);
         }
 
-        return null;
+        return nextMove;
+    }
+
+    Directions? GetDirectionToTarget(Vector3 target)
+    {
+        var list = new List<Directions>();
+        var currentPosition = ghost.transform.position;
+        var distanceToTarget = (target - currentPosition).magnitude;
+
+        if ((target - (currentPosition + new Vector3(0.0f, 1.0f, 1.0f)))
+            .magnitude <= distanceToTarget)
+        {
+            list.Add(Directions.Up);
+        }
+        else if ((target - (currentPosition + new Vector3(-1.0f, 0.0f, 0.0f)))
+            .magnitude <= distanceToTarget)
+        {
+            list.Add(Directions.Left);
+        }
+        else if ((target - (currentPosition + new Vector3(1.0f, 0.0f, 0.0f)))
+            .magnitude <= distanceToTarget)
+        {
+            list.Add(Directions.Right);
+        }
+        else if ((target - (currentPosition + new Vector3(0.0f, -1.0f, 0.0f)))
+            .magnitude <= distanceToTarget)
+        {
+            list.Add(Directions.Down);
+        }
+
+        if (list.Count == 0)
+        {
+            return null;
+        }
+
+        var randomValidDirectionIndex = Random.Range(0, list.Count);
+        return list[randomValidDirectionIndex];
     }
 
     void MoveGhost(Directions? nextMove)
@@ -463,6 +513,24 @@ public class GhostController : MonoBehaviour
                 default: break;
             }
         }
+    }
+
+    Directions? GetDirectionToTarget(Vector2 newPosition)
+    {
+        if (!tweener.TweenExists(ghost.transform))
+        {
+            if (lastDirection != null && !IsBlockedByWall((Directions)lastDirection))
+            // Ants should be going in one direction until they can't
+            {
+                return (Directions)lastDirection;
+            }
+            else
+            {
+                return GetDirectionToTarget(newPosition);
+            }
+        }
+
+        return null;
     }
 
     void CreateDustTrail()
