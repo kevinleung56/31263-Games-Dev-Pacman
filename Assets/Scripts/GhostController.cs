@@ -29,6 +29,7 @@ public class GhostController : MonoBehaviour
     private bool isScared = false;
     private bool isRecovering = false;
     private bool gameStarted = false;
+    private Vector3? spawnExit = null;
     private int ghostType = -1;
     private Directions? lastMove;
 
@@ -239,6 +240,7 @@ public class GhostController : MonoBehaviour
                     }
                     else
                     { // Ghost is outside of spawn and using ghost-specific logic
+                        spawnExit = null;
                         var nextMove = GetNextMove();
                         if (nextMove != null)
                         {
@@ -317,6 +319,49 @@ public class GhostController : MonoBehaviour
 
         var hypotheticalDistance = (pacStudentPosition - hypotheticalPosition).magnitude;
         
+        if (lower)
+        {
+            return hypotheticalDistance <= targetDistance;
+        }
+        else
+        {
+            return hypotheticalDistance >= targetDistance;
+        }
+    }
+
+    bool CheckDistanceToTargetIsHigherOrLowerAndCollision(
+        Vector3 target,
+        float targetDistance,
+        Vector3 currentPosition,
+        Directions direction,
+        bool lower = true)
+    {
+        // Don't bother calculating hypothetical distances if we
+        // can't travel to the new position to begin with
+        if (IsBlockedByWall(direction))
+        {
+            return false;
+        }
+
+        Vector3 hypotheticalPosition = currentPosition;
+        switch (direction)
+        {
+            case Directions.Up:
+                hypotheticalPosition = currentPosition + new Vector3(0.0f, 1.0f, 0.0f);
+                break;
+            case Directions.Down:
+                hypotheticalPosition = currentPosition + new Vector3(0.0f, -1.0f, 0.0f);
+                break;
+            case Directions.Left:
+                hypotheticalPosition = currentPosition + new Vector3(-1.0f, 0.0f, 0.0f);
+                break;
+            case Directions.Right:
+                hypotheticalPosition = currentPosition + new Vector3(1.0f, 0.0f, 0.0f);
+                break;
+        }
+
+        var hypotheticalDistance = (target - hypotheticalPosition).magnitude;
+
         if (lower)
         {
             return hypotheticalDistance <= targetDistance;
@@ -474,22 +519,25 @@ public class GhostController : MonoBehaviour
 
     void GetOutOfSpawn()
     {
-        Vector3 target;
         var positiveOrNegativeRNG = Random.Range(0f, 1f);
-        if (positiveOrNegativeRNG > 0.5f || ghostType == 1)
-        // Ghost 1 wants to be as far as possible and this looks less buggy
+        if (spawnExit == null)
         {
-            target = new Vector3(5f, -12.5f);
-        }
-        else
-        {
-            target = new Vector3(5f, -6.5f);
+            if (positiveOrNegativeRNG > 0.5f || ghostType == 1)
+            // Ghost 1 wants to be as far as possible and this looks less buggy
+            {
+                spawnExit = new Vector3(5f, -12.5f);
+            }
+            else
+            {
+                spawnExit = new Vector3(5f, -6.5f);
+            }
         }
         
-        var nextMove = GetDirectionToTarget(target);
+        var nextMove = GetDirectionToTarget((Vector3)spawnExit);
 
         if (nextMove != null)
         {
+            lastMove = nextMove;
             MoveGhost(nextMove);
         }
     }
@@ -531,50 +579,62 @@ public class GhostController : MonoBehaviour
     {
         var list = new List<Directions>();
         var currentPosition = ghost.transform.position;
-        var distanceToTarget = (target - currentPosition).magnitude;
+        var headingVector = target - currentPosition;
+        var distanceToTarget = headingVector.magnitude;
+        Directions? directionToNotBacktrack = null;
 
-        if (!IsBlockedByWall(Directions.Up) && 
-            (target - (currentPosition + new Vector3(0.0f, 1.0f, 0.0f)))
-            .magnitude <= distanceToTarget)
+        if (lastMove != null)
         {
-            if (lastMove != Directions.Up)
-            {
-                list.Add(Directions.Up);
-            }
+            directionToNotBacktrack =
+                IdentifyDirectionToNotBacktrack((Directions)lastMove);
         }
-        else if (!IsBlockedByWall(Directions.Left) &&
-            (target - (currentPosition + new Vector3(-1.0f, 0.0f, 0.0f)))
-            .magnitude <= distanceToTarget)
+
+        if (directionToNotBacktrack != Directions.Up &&
+            CheckDistanceToTargetIsHigherOrLowerAndCollision(
+                target,
+                distanceToTarget,
+                currentPosition,
+                Directions.Up))
         {
-            if (lastMove != Directions.Left)
-            {
-                list.Add(Directions.Left);
-            }
+            list.Add(Directions.Up);
         }
-        else if (!IsBlockedByWall(Directions.Right) &&
-            (target - (currentPosition + new Vector3(1.0f, 0.0f, 0.0f)))
-            .magnitude <= distanceToTarget)
+        else if (directionToNotBacktrack != Directions.Left &&
+            CheckDistanceToTargetIsHigherOrLowerAndCollision(
+                target,
+                distanceToTarget,
+                currentPosition,
+                Directions.Left))
         {
-            if (lastMove != Directions.Right)
-            {
-                list.Add(Directions.Right);
-            }
+            list.Add(Directions.Left);
         }
-        else if (!IsBlockedByWall(Directions.Down) &&
-            (target - (currentPosition + new Vector3(0.0f, -1.0f, 0.0f)))
-            .magnitude <= distanceToTarget)
+        else if (directionToNotBacktrack != Directions.Right &&
+            CheckDistanceToTargetIsHigherOrLowerAndCollision(
+                target,
+                distanceToTarget,
+                currentPosition,
+                Directions.Right))
         {
-            if (lastMove != Directions.Down)
-            {
-                list.Add(Directions.Down);
-            }
+            list.Add(Directions.Right);
+        }
+        else if (directionToNotBacktrack != Directions.Down &&
+            CheckDistanceToTargetIsHigherOrLowerAndCollision(
+                target,
+                distanceToTarget,
+                currentPosition,
+                Directions.Down))
+        {
+            list.Add(Directions.Down);
         }
 
         if (list.Count == 0)
+        // There are no optimal directions
+        // However we have to move regardless
+        // Move to a random direction - which is ghost 3 behaviour
         {
-            return null;
+            return Ghost3Behaviour();
         }
 
+        // RNG to use a random valid direction
         var randomValidDirectionIndex = Random.Range(0, list.Count);
         return list[randomValidDirectionIndex];
     }
