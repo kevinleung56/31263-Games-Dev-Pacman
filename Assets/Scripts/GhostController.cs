@@ -215,7 +215,7 @@ public class GhostController : MonoBehaviour
 
     bool IsAlreadyMoving()
     {
-        return !tweener.TweenExists(ghost.transform);
+        return tweener.TweenExists(ghost.transform);
     }
 
     // Update is called once per frame
@@ -229,18 +229,16 @@ public class GhostController : MonoBehaviour
 
             pacStudentPosition = pacStudent.transform.position;
 
-            if (!IsAlreadyMoving() && !isScared && !isDead)
+            if (!IsAlreadyMoving())
             {
-                if (CheckGhostIsInSpawn())
-                { // Ghost is just trying to get out of spawn
-                    if (!tweener.TweenExists(ghost.transform)) {
+                if (!isScared && !isDead)
+                {
+                    if (CheckGhostIsInSpawn())
+                    { // Ghost is just trying to get out of spawn
                         GetOutOfSpawn();
                     }
-                }
-                else
-                { // Ghost is outside of spawn and using ghost-specific logic
-                    if (!IsAlreadyMoving())
-                    {
+                    else
+                    { // Ghost is outside of spawn and using ghost-specific logic
                         var nextMove = GetNextMove();
                         if (nextMove != null)
                         {
@@ -249,19 +247,19 @@ public class GhostController : MonoBehaviour
                         }
                     }
                 }
-            }
-            else if (!IsAlreadyMoving() && (isScared || isRecovering))
-            {
-                var nextMove = Ghost1Behaviour();
-                if (nextMove != null)
+                else if (isScared || isRecovering)
                 {
-                    lastMove = (Directions)nextMove;
-                    MoveGhost((Directions)nextMove);
+                    var nextMove = Ghost1Behaviour();
+                    if (nextMove != null)
+                    {
+                        lastMove = (Directions)nextMove;
+                        MoveGhost((Directions)nextMove);
+                    }
                 }
-            }
-            else if (isDead)
-            {
-                // Lerp towards the centre
+                else if (isDead)
+                {
+                    // Lerp towards the centre
+                }
             }
         }
     }
@@ -476,7 +474,17 @@ public class GhostController : MonoBehaviour
 
     void GetOutOfSpawn()
     {
-        Vector3 target = new Vector3(5f, -6.5f);
+        Vector3 target;
+        var positiveOrNegativeRNG = Random.Range(0f, 1f);
+        if (positiveOrNegativeRNG > 0.5f || ghostType == 1)
+        // Ghost 1 wants to be as far as possible and this looks less buggy
+        {
+            target = new Vector3(5f, -12.5f);
+        }
+        else
+        {
+            target = new Vector3(5f, -6.5f);
+        }
         
         var nextMove = GetDirectionToTarget(target);
 
