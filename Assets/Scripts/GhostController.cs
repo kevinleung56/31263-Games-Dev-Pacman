@@ -213,6 +213,11 @@ public class GhostController : MonoBehaviour
         return true;
     }
 
+    bool IsAlreadyMoving()
+    {
+        return !tweener.TweenExists(ghost.transform);
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -223,23 +228,29 @@ public class GhostController : MonoBehaviour
             isRecovering = animatorController.GetBool("AntIsRecoveringParam");
 
             pacStudentPosition = pacStudent.transform.position;
-            if (!isScared && !isDead)
+
+            if (!IsAlreadyMoving() && !isScared && !isDead)
             {
                 if (CheckGhostIsInSpawn())
                 { // Ghost is just trying to get out of spawn
-                    GetOutOfSpawn();
+                    if (!tweener.TweenExists(ghost.transform)) {
+                        GetOutOfSpawn();
+                    }
                 }
                 else
                 { // Ghost is outside of spawn and using ghost-specific logic
-                    var nextMove = GetNextMove();
-                    if (nextMove != null)
+                    if (!IsAlreadyMoving())
                     {
-                        lastMove = (Directions)nextMove;
-                        MoveGhost((Directions)nextMove);
+                        var nextMove = GetNextMove();
+                        if (nextMove != null)
+                        {
+                            lastMove = (Directions)nextMove;
+                            MoveGhost((Directions)nextMove);
+                        }
                     }
                 }
             }
-            else if (isScared || isRecovering)
+            else if (!IsAlreadyMoving() && (isScared || isRecovering))
             {
                 var nextMove = Ghost1Behaviour();
                 if (nextMove != null)
@@ -370,8 +381,11 @@ public class GhostController : MonoBehaviour
         }
 
         if (list.Count == 0)
+        // There are no optimal directions
+        // However we have to move regardless
+        // Move to a random direction - which is ghost 3 behaviour
         {
-            return null;
+            return Ghost3Behaviour();
         }
 
         // RNG to use a random valid direction
@@ -427,8 +441,11 @@ public class GhostController : MonoBehaviour
         }
 
         if (list.Count == 0)
+        // There are no optimal directions
+        // However we have to move regardless
+        // Move to a random direction - which is ghost 3 behaviour
         {
-            return null;
+            return Ghost3Behaviour();
         }
 
         // RNG to use a random valid direction
@@ -436,18 +453,36 @@ public class GhostController : MonoBehaviour
         return list[randomValidDirectionIndex];
     }
 
+    Directions Ghost3Behaviour()
+    {
+        var nextMove = (Directions)Random.Range(0, 4);
+        Directions? directionToNotBacktrack = null;
+
+        if (lastMove != null)
+        {
+            directionToNotBacktrack =
+                IdentifyDirectionToNotBacktrack((Directions)lastMove);
+        }
+
+        while (directionToNotBacktrack == nextMove || IsBlockedByWall(nextMove))
+        // Must be move-able direction and cannot backtrack
+        // Should be able to move back if last resort
+        {
+            nextMove = (Directions)Random.Range(0, 4);
+        }
+
+        return nextMove;
+    }
+
     void GetOutOfSpawn()
     {
         Vector3 target = new Vector3(5f, -6.5f);
         
-        if (!tweener.TweenExists(ghost.transform))
-        {
-            var nextMove = GetDirectionToTarget(target);
+        var nextMove = GetDirectionToTarget(target);
 
-            if (nextMove != null)
-            {
-                MoveGhost(nextMove);
-            }
+        if (nextMove != null)
+        {
+            MoveGhost(nextMove);
         }
     }
 
@@ -474,14 +509,7 @@ public class GhostController : MonoBehaviour
         }
         else if (ghostType == 3)
         {
-            nextMove = (Directions)Random.Range(0, 4);
-
-            while (nextMove == lastMove || IsBlockedByWall((Directions)nextMove))
-                // Must be move-able direction and cannot backtrack
-                // Should be able to move back if last resort
-            {
-                nextMove = (Directions)Random.Range(0, 4);
-            }
+            nextMove = Ghost3Behaviour();
         }
         else if (ghostType == 4)
         {
