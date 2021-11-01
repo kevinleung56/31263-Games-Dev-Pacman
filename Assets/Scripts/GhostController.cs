@@ -269,7 +269,7 @@ public class GhostController : MonoBehaviour
     Directions IdentifyDirectionToNotBacktrack(Directions lastMove)
     {
         Directions directionToNotBacktrack = lastMove;
-        switch (lastMove) 
+        switch (lastMove)
         {
             case Directions.Up:
                 directionToNotBacktrack = Directions.Down;
@@ -287,20 +287,31 @@ public class GhostController : MonoBehaviour
         return directionToNotBacktrack;
     }
 
-    bool CheckDistanceToTargetIsHigherOrLowerAndCollision(
-        Vector3 target,
-        float targetDistance,
-        Vector3 currentPosition,
-        Directions direction,
-        bool lower = true)
+    bool IsNotGoingIntoSpawnOrTunnel(Vector3 hypotheticalPosition)
     {
-        // Don't bother calculating hypothetical distances if we
-        // can't travel to the new position to begin with
-        if (IsBlockedByWall(direction))
-        {
-            return false;
+        if (!isScared && !isDead) {
+            if (!CheckGhostIsInSpawn() &&
+                (hypotheticalPosition == new Vector3(4.5f, -11.5f) ||
+                hypotheticalPosition == new Vector3(5.5f, -11.5f) ||
+                hypotheticalPosition == new Vector3(4.5f, -7.5f) ||
+                hypotheticalPosition == new Vector3(5.5f, -7.5f)))
+            {
+                return false; // We don't want ghosts to go back into spawn if they're alive
+            }
+            else if (hypotheticalPosition == new Vector3(-3.5f, -9.5f) ||
+                hypotheticalPosition == new Vector3(13.5f, -9.5f))
+            {
+                return false; // We don't want ghosts to use tunnels no matter what
+            }
         }
 
+        return true;
+    }
+
+    Vector3 GetHypotheticalPositionUsingDirection(
+        Vector3 currentPosition,
+        Directions direction)
+    {
         Vector3 hypotheticalPosition = currentPosition;
         switch (direction)
         {
@@ -318,15 +329,43 @@ public class GhostController : MonoBehaviour
                 break;
         }
 
-        var hypotheticalDistance = (target - hypotheticalPosition).magnitude;
+        return hypotheticalPosition;
+    }
 
-        if (lower)
+    bool CheckDistanceToTargetIsHigherOrLowerAndCollision(
+        Vector3 target,
+        float targetDistance,
+        Vector3 currentPosition,
+        Directions direction,
+        bool lower = true)
+    {
+        // Don't bother calculating hypothetical distances if we
+        // can't travel to the new position to begin with
+        if (IsBlockedByWall(direction))
         {
-            return hypotheticalDistance <= targetDistance;
+            return false;
+        }
+
+        var hypotheticalPosition = GetHypotheticalPositionUsingDirection(
+            currentPosition,
+            direction);
+
+        if (IsNotGoingIntoSpawnOrTunnel(hypotheticalPosition))
+        {
+            var hypotheticalDistance = (target - hypotheticalPosition).magnitude;
+
+            if (lower)
+            {
+                return hypotheticalDistance <= targetDistance;
+            }
+            else
+            {
+                return hypotheticalDistance >= targetDistance;
+            }
         }
         else
         {
-            return hypotheticalDistance >= targetDistance;
+            return false;
         }
     }
 
@@ -343,6 +382,7 @@ public class GhostController : MonoBehaviour
     Directions Ghost3Behaviour()
     {
         var nextMove = (Directions)Random.Range(0, 4);
+        var currentPosition = ghost.transform.position;
         Directions? directionToNotBacktrack = null;
 
         if (lastMove != null)
@@ -351,7 +391,10 @@ public class GhostController : MonoBehaviour
                 IdentifyDirectionToNotBacktrack((Directions)lastMove);
         }
 
-        while (directionToNotBacktrack == nextMove || IsBlockedByWall(nextMove))
+        while (directionToNotBacktrack == nextMove ||
+            IsBlockedByWall(nextMove) ||
+            !IsNotGoingIntoSpawnOrTunnel(
+                GetHypotheticalPositionUsingDirection(currentPosition, nextMove)))
         // Must be move-able direction and cannot backtrack
         // Should be able to move back if last resort
         {
@@ -366,14 +409,15 @@ public class GhostController : MonoBehaviour
         var positiveOrNegativeRNG = Random.Range(0f, 1f);
         if (spawnExit == null)
         {
-            if (positiveOrNegativeRNG > 0.5f || ghostType == 1)
+            if ((positiveOrNegativeRNG > 0.5f && ghostType != 2) || ghostType == 1)
             // Ghost 1 wants to be as far as possible and this looks less buggy
+            // Ghost 2 wants to be as close as possible and this looks less buggy
             {
-                spawnExit = new Vector3(5f, -12.5f);
+                spawnExit = new Vector3(4.5f, -12.5f);
             }
             else
             {
-                spawnExit = new Vector3(5f, -6.5f);
+                spawnExit = new Vector3(4.5f, -6.5f);
             }
         }
         
