@@ -287,48 +287,6 @@ public class GhostController : MonoBehaviour
         return directionToNotBacktrack;
     }
 
-    bool CheckDistanceToPacstudentIsHigherOrLowerAndCollision(
-        float targetDistance,
-        Vector3 currentPosition,
-        Directions direction,
-        bool lower = true)
-    {
-        // Don't bother calculating hypothetical distances if we
-        // can't travel to the new position to begin with
-        if (IsBlockedByWall(direction))
-        {
-            return false;
-        }
-
-        Vector3 hypotheticalPosition = currentPosition;
-        switch (direction)
-        {
-            case Directions.Up:
-                hypotheticalPosition = currentPosition + new Vector3(0.0f, 1.0f, 0.0f);
-                break;
-            case Directions.Down:
-                hypotheticalPosition = currentPosition + new Vector3(0.0f, -1.0f, 0.0f);
-                break;
-            case Directions.Left:
-                hypotheticalPosition = currentPosition + new Vector3(-1.0f, 0.0f, 0.0f);
-                break;
-            case Directions.Right:
-                hypotheticalPosition = currentPosition + new Vector3(1.0f, 0.0f, 0.0f);
-                break;
-        }
-
-        var hypotheticalDistance = (pacStudentPosition - hypotheticalPosition).magnitude;
-        
-        if (lower)
-        {
-            return hypotheticalDistance <= targetDistance;
-        }
-        else
-        {
-            return hypotheticalDistance >= targetDistance;
-        }
-    }
-
     bool CheckDistanceToTargetIsHigherOrLowerAndCollision(
         Vector3 target,
         float targetDistance,
@@ -374,126 +332,12 @@ public class GhostController : MonoBehaviour
 
     Directions? Ghost1Behaviour()
     {
-        var list = new List<Directions>();
-        var currentPosition = ghost.transform.position;
-        var headingVector = pacStudentPosition - currentPosition;
-        var distanceToPacstudent = headingVector.magnitude;
-        Directions? directionToNotBacktrack = null;
-        
-        if (lastMove != null)
-        {
-            directionToNotBacktrack =
-                IdentifyDirectionToNotBacktrack((Directions)lastMove);
-        }
-
-        if (directionToNotBacktrack != Directions.Up &&
-            CheckDistanceToPacstudentIsHigherOrLowerAndCollision(
-                distanceToPacstudent,
-                currentPosition,
-                Directions.Up,
-                false))
-        {
-            list.Add(Directions.Up);
-        }
-        else if (directionToNotBacktrack != Directions.Left &&
-            CheckDistanceToPacstudentIsHigherOrLowerAndCollision(
-                distanceToPacstudent,
-                currentPosition,
-                Directions.Left,
-                false))
-        {
-            list.Add(Directions.Left);
-        }
-        else if (directionToNotBacktrack != Directions.Right &&
-            CheckDistanceToPacstudentIsHigherOrLowerAndCollision(
-                distanceToPacstudent,
-                currentPosition,
-                Directions.Right,
-                false))
-        {
-            list.Add(Directions.Right);
-        }
-        else if (directionToNotBacktrack != Directions.Down &&
-            CheckDistanceToPacstudentIsHigherOrLowerAndCollision(
-                distanceToPacstudent,
-                currentPosition,
-                Directions.Down,
-                false))
-        {
-            list.Add(Directions.Down);
-        }
-
-        if (list.Count == 0)
-        // There are no optimal directions
-        // However we have to move regardless
-        // Move to a random direction - which is ghost 3 behaviour
-        {
-            return Ghost3Behaviour();
-        }
-
-        // RNG to use a random valid direction
-        var randomValidDirectionIndex = Random.Range(0, list.Count);
-        return list[randomValidDirectionIndex];
+        return GetDirectionToTarget(pacStudentPosition, false);
     }
 
     Directions? Ghost2Behaviour()
     {
-        var list = new List<Directions>();
-        var currentPosition = ghost.transform.position;
-        var headingVector = pacStudentPosition - currentPosition;
-        var distanceToPacstudent = headingVector.magnitude;
-        Directions? directionToNotBacktrack = null;
-
-        if (lastMove != null)
-        {
-            directionToNotBacktrack =
-                IdentifyDirectionToNotBacktrack((Directions)lastMove);
-        }
-
-        if (directionToNotBacktrack != Directions.Up &&
-            CheckDistanceToPacstudentIsHigherOrLowerAndCollision(
-                distanceToPacstudent,
-                currentPosition,
-                Directions.Up))
-        {
-            list.Add(Directions.Up);
-        }
-        else if (directionToNotBacktrack != Directions.Left &&
-            CheckDistanceToPacstudentIsHigherOrLowerAndCollision(
-                distanceToPacstudent,
-                currentPosition,
-                Directions.Left))
-        {
-            list.Add(Directions.Left);
-        }
-        else if (directionToNotBacktrack != Directions.Right &&
-            CheckDistanceToPacstudentIsHigherOrLowerAndCollision(
-                distanceToPacstudent,
-                currentPosition,
-                Directions.Right))
-        {
-            list.Add(Directions.Right);
-        }
-        else if (directionToNotBacktrack != Directions.Down &&
-            CheckDistanceToPacstudentIsHigherOrLowerAndCollision(
-                distanceToPacstudent,
-                currentPosition,
-                Directions.Down))
-        {
-            list.Add(Directions.Down);
-        }
-
-        if (list.Count == 0)
-        // There are no optimal directions
-        // However we have to move regardless
-        // Move to a random direction - which is ghost 3 behaviour
-        {
-            return Ghost3Behaviour();
-        }
-
-        // RNG to use a random valid direction
-        var randomValidDirectionIndex = Random.Range(0, list.Count);
-        return list[randomValidDirectionIndex];
+        return GetDirectionToTarget(pacStudentPosition);
     }
 
     Directions Ghost3Behaviour()
@@ -575,7 +419,7 @@ public class GhostController : MonoBehaviour
         return nextMove;
     }
 
-    Directions? GetDirectionToTarget(Vector3 target)
+    Directions? GetDirectionToTarget(Vector3 target, bool lower = true)
     {
         var list = new List<Directions>();
         var currentPosition = ghost.transform.position;
@@ -594,7 +438,8 @@ public class GhostController : MonoBehaviour
                 target,
                 distanceToTarget,
                 currentPosition,
-                Directions.Up))
+                Directions.Up,
+                lower))
         {
             list.Add(Directions.Up);
         }
@@ -603,7 +448,8 @@ public class GhostController : MonoBehaviour
                 target,
                 distanceToTarget,
                 currentPosition,
-                Directions.Left))
+                Directions.Left,
+                lower))
         {
             list.Add(Directions.Left);
         }
@@ -612,7 +458,8 @@ public class GhostController : MonoBehaviour
                 target,
                 distanceToTarget,
                 currentPosition,
-                Directions.Right))
+                Directions.Right,
+                lower))
         {
             list.Add(Directions.Right);
         }
@@ -621,7 +468,8 @@ public class GhostController : MonoBehaviour
                 target,
                 distanceToTarget,
                 currentPosition,
-                Directions.Down))
+                Directions.Down,
+                lower))
         {
             list.Add(Directions.Down);
         }
