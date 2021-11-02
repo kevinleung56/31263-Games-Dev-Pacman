@@ -1,7 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
 using UnityEngine.UI;
+using Debug = UnityEngine.Debug;
 
 public class GhostController : MonoBehaviour
 {
@@ -30,8 +32,10 @@ public class GhostController : MonoBehaviour
     private bool isRecovering = false;
     private bool gameStarted = false;
     private Vector3? spawnExit = null;
+    private Vector3 spawnCentre = new Vector3(4.5f, -9.5f);
     private int ghostType = -1;
     private Directions? lastMove;
+    private Stopwatch deadTimer = new Stopwatch();
 
     private enum Directions { Up, Down, Left, Right };
 
@@ -148,7 +152,6 @@ public class GhostController : MonoBehaviour
     {
         if (IsBlockedByWall(Directions.Left))
         {
-            animatorController.SetBool("MoveLeftRightParam", false);
             StopDustTrail();
             return false;
         }
@@ -156,7 +159,6 @@ public class GhostController : MonoBehaviour
         var vectorToMove = vector == null ? new Vector3(-1.0f, 0.0f, 0.0f) : (Vector3)vector;
         OnGhostMove();
         spriteRenderer.flipX = false;
-        animatorController.SetBool("MoveLeftRightParam", true);
         AddTweenToPosition(ghost.transform.position + vectorToMove, duration);
         return true;
     }
@@ -165,7 +167,6 @@ public class GhostController : MonoBehaviour
     {
         if (IsBlockedByWall(Directions.Right))
         {
-            animatorController.SetBool("MoveLeftRightParam", false);
             StopDustTrail();
             return false;
         }
@@ -173,7 +174,6 @@ public class GhostController : MonoBehaviour
         var vectorToMove = vector == null ? new Vector3(1.0f, 0.0f, 0.0f) : (Vector3)vector;
         OnGhostMove();
         spriteRenderer.flipX = true;
-        animatorController.SetBool("MoveLeftRightParam", true);
         AddTweenToPosition(ghost.transform.position + vectorToMove, duration);
         return true;
     }
@@ -182,7 +182,6 @@ public class GhostController : MonoBehaviour
     {
         if (IsBlockedByWall(Directions.Up)) // When rotated, right becomes Pac-student's forward
         {
-            animatorController.SetBool("MoveLeftRightParam", false);
             StopDustTrail();
             return false;
         }
@@ -191,7 +190,6 @@ public class GhostController : MonoBehaviour
         OnGhostMove();
         spriteRenderer.flipX = true;
         ghost.transform.Rotate(new Vector3(0, 0, 90));
-        animatorController.SetBool("MoveLeftRightParam", true);
         AddTweenToPosition(ghost.transform.position + vectorToMove, duration);
         return true;
     }
@@ -200,7 +198,6 @@ public class GhostController : MonoBehaviour
     {
         if (IsBlockedByWall(Directions.Down))
         {
-            animatorController.SetBool("MoveLeftRightParam", false);
             StopDustTrail();
             return false;
         }
@@ -209,7 +206,6 @@ public class GhostController : MonoBehaviour
         OnGhostMove();
         spriteRenderer.flipX = false;
         ghost.transform.Rotate(new Vector3(0, 0, 90));
-        animatorController.SetBool("MoveLeftRightParam", true);
         AddTweenToPosition(ghost.transform.position + vectorToMove, duration);
         return true;
     }
@@ -234,6 +230,12 @@ public class GhostController : MonoBehaviour
             {
                 if (!isScared && !isDead)
                 {
+                    if (deadTimer.IsRunning)
+                    {
+                        deadTimer.Stop(); // State changed externally so update this
+                        deadTimer.Reset(); // State changed externally so update this
+                    }
+
                     if (CheckGhostIsInSpawn())
                     { // Ghost is just trying to get out of spawn
                         GetOutOfSpawn();
@@ -251,6 +253,12 @@ public class GhostController : MonoBehaviour
                 }
                 else if (isScared || isRecovering)
                 {
+                    if (deadTimer.IsRunning)
+                    {
+                        deadTimer.Stop(); // State changed externally so update this
+                        deadTimer.Reset(); // State changed externally so update this
+                    }
+
                     var nextMove = Ghost1Behaviour();
                     if (nextMove != null)
                     {
@@ -260,7 +268,22 @@ public class GhostController : MonoBehaviour
                 }
                 else if (isDead)
                 {
-                    // Lerp towards the centre
+                    if (!deadTimer.IsRunning)
+                    {
+                        deadTimer.Start();
+                    }
+                    else
+                    {
+                        var timeLeft = 5 - deadTimer.Elapsed.Seconds;
+
+                        if (timeLeft <= 0)
+                        {
+                            animatorController.SetBool("AntIsDeadParam", false);
+                            isDead = false;
+                        }
+                    }
+
+                    GoToSpawn(); // Lerp towards the centre
                 }
             }
         }
@@ -287,7 +310,7 @@ public class GhostController : MonoBehaviour
         return directionToNotBacktrack;
     }
 
-    bool IsNotGoingIntoSpawnOrTunnel(Vector3 hypotheticalPosition)
+    bool IsNotGoingIntoSpawn(Vector3 hypotheticalPosition)
     {
         if (!isScared && !isDead && !CheckGhostIsInSpawn() &&
             (hypotheticalPosition == new Vector3(4.5f, -11.5f) ||
@@ -297,7 +320,13 @@ public class GhostController : MonoBehaviour
         {
             return false; // We don't want ghosts to go back into spawn if they're alive
         }
-        else if (hypotheticalPosition == new Vector3(-3.5f, -9.5f) ||
+
+        return true;
+    }
+
+    bool IsNotGoingIntoTunnel(Vector3 hypotheticalPosition)
+    {
+        if (hypotheticalPosition == new Vector3(-3.5f, -9.5f) ||
             hypotheticalPosition == new Vector3(13.5f, -9.5f))
         {
             return false; // We don't want ghosts to use tunnels no matter what
@@ -335,7 +364,8 @@ public class GhostController : MonoBehaviour
         float targetDistance,
         Vector3 currentPosition,
         Directions direction,
-        bool lower = true)
+        bool lower = true,
+        bool overrideSpawnCheck = false)
     {
         // Don't bother calculating hypothetical distances if we
         // can't travel to the new position to begin with
@@ -348,7 +378,8 @@ public class GhostController : MonoBehaviour
             currentPosition,
             direction);
 
-        if (IsNotGoingIntoSpawnOrTunnel(hypotheticalPosition))
+        if ((overrideSpawnCheck || IsNotGoingIntoSpawn(hypotheticalPosition))
+            && IsNotGoingIntoTunnel(hypotheticalPosition))
         {
             var hypotheticalDistance = (target - hypotheticalPosition).magnitude;
 
@@ -389,14 +420,17 @@ public class GhostController : MonoBehaviour
                 IdentifyDirectionToNotBacktrack((Directions)lastMove);
         }
 
+        var hypotheticalPosition = GetHypotheticalPositionUsingDirection(currentPosition, nextMove);
+
         while (directionToNotBacktrack == nextMove ||
             IsBlockedByWall(nextMove) ||
-            !IsNotGoingIntoSpawnOrTunnel(
-                GetHypotheticalPositionUsingDirection(currentPosition, nextMove)))
+            !IsNotGoingIntoSpawn(hypotheticalPosition) ||
+            !IsNotGoingIntoTunnel(hypotheticalPosition))
         // Must be move-able direction and cannot backtrack
         // Should be able to move back if last resort
         {
             nextMove = (Directions)Random.Range(0, 4);
+            hypotheticalPosition = GetHypotheticalPositionUsingDirection(currentPosition, nextMove);
         }
 
         return nextMove;
@@ -425,6 +459,17 @@ public class GhostController : MonoBehaviour
         {
             lastMove = nextMove;
             MoveGhost(nextMove);
+        }
+    }
+
+    void GoToSpawn()
+    {
+        var nextMove = GetDirectionToTarget(spawnCentre, overrideSpawnCheck: true);
+
+        if (nextMove != null)
+        {
+            lastMove = nextMove;
+            MoveGhost(nextMove, 0.1f);
         }
     }
 
@@ -461,7 +506,7 @@ public class GhostController : MonoBehaviour
         return nextMove;
     }
 
-    Directions? GetDirectionToTarget(Vector3 target, bool lower = true)
+    Directions? GetDirectionToTarget(Vector3 target, bool lower = true, bool overrideSpawnCheck = false)
     {
         var list = new List<Directions>();
         var currentPosition = ghost.transform.position;
@@ -481,7 +526,8 @@ public class GhostController : MonoBehaviour
                 distanceToTarget,
                 currentPosition,
                 Directions.Up,
-                lower))
+                lower,
+                overrideSpawnCheck))
         {
             list.Add(Directions.Up);
         }
@@ -491,7 +537,8 @@ public class GhostController : MonoBehaviour
                 distanceToTarget,
                 currentPosition,
                 Directions.Left,
-                lower))
+                lower,
+                overrideSpawnCheck))
         {
             list.Add(Directions.Left);
         }
@@ -501,7 +548,8 @@ public class GhostController : MonoBehaviour
                 distanceToTarget,
                 currentPosition,
                 Directions.Right,
-                lower))
+                lower,
+                overrideSpawnCheck))
         {
             list.Add(Directions.Right);
         }
@@ -511,7 +559,8 @@ public class GhostController : MonoBehaviour
                 distanceToTarget,
                 currentPosition,
                 Directions.Down,
-                lower))
+                lower,
+                overrideSpawnCheck))
         {
             list.Add(Directions.Down);
         }
@@ -529,23 +578,23 @@ public class GhostController : MonoBehaviour
         return list[randomValidDirectionIndex];
     }
 
-    void MoveGhost(Directions? nextMove)
+    void MoveGhost(Directions? nextMove, float duration = 0.25f)
     {
         if (!tweener.TweenExists(ghost.transform))
         {
             switch(nextMove)
             {
                 case Directions.Left:
-                    MoveLeft();
+                    MoveLeft(duration: duration);
                     break;
                 case Directions.Right:
-                    MoveRight();
+                    MoveRight(duration: duration);
                     break;
                 case Directions.Up:
-                    MoveUp();
+                    MoveUp(duration: duration);
                     break;
                 case Directions.Down:
-                    MoveDown();
+                    MoveDown(duration: duration);
                     break;
                 default: break;
             }

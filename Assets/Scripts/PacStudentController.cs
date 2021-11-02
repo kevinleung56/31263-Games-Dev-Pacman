@@ -487,13 +487,17 @@ public class PacStudentController : MonoBehaviour
                 foreach (var ant in ants)
                 {
                     var animator = ant.GetComponent<Animator>();
-                    animator.SetBool("AntIsDeadParam", false);
-                    animator.SetBool("AntIsRecoveringParam", false);
-                    animator.SetBool("AntIsScaredParam", false);
+                    if (!animator.GetBool("AntIsDeadParam"))
+                    {
+                        animator.SetBool("AntIsRecoveringParam", false);
+                        animator.SetBool("AntIsScaredParam", false);
+                    }
+
                 }
 
                 break;
             case GhostState.Scared:
+                // Should dead ghosts become scared?
                 foreach (var ant in ants)
                 {
                     var animator = ant.GetComponent<Animator>();
@@ -508,9 +512,10 @@ public class PacStudentController : MonoBehaviour
                 foreach (var ant in ants)
                 {
                     var animator = ant.GetComponent<Animator>();
-                    animator.SetBool("AntIsDeadParam", false);
-                    animator.SetBool("AntIsRecoveringParam", true);
-                    animator.SetBool("AntIsScaredParam", false);
+                    if (!animator.GetBool("AntIsDeadParam")) {
+                        animator.SetBool("AntIsRecoveringParam", true);
+                        animator.SetBool("AntIsScaredParam", false);
+                    }
                 }
 
                 break;
@@ -581,7 +586,7 @@ public class PacStudentController : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        UnityEngine.Debug.Log("Collision Enter: " + collision.gameObject + " : " + collision.transform.position);
+        Debug.Log("Collision Enter: " + collision.gameObject + " : " + collision.transform.position);
         if (collision.gameObject.CompareTag("Pellet"))
         {
             // Add 10 to score
