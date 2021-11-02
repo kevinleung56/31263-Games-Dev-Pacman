@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.Tilemaps;
 
 public class LevelGenerator : MonoBehaviour
@@ -168,5 +169,10 @@ public class LevelGenerator : MonoBehaviour
     void Update()
     {
         
+    }
+
+    public void LoadStartScene()
+    {
+        SceneManager.LoadSceneAsync(1);
     }
 }
