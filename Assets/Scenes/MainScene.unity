@@ -213,6 +213,10 @@ PrefabInstance:
 '
       objectReference: {fileID: 0}
     - target: {fileID: 6611153959131336507, guid: 22f6112bfd490f2408aa4a68c4c02939, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6611153959131336507, guid: 22f6112bfd490f2408aa4a68c4c02939, type: 3}
       propertyPath: gameCamera
       value: 
       objectReference: {fileID: 519420031}
@@ -403,6 +407,10 @@ PrefabInstance:
       value: '3
 
 '
+      objectReference: {fileID: 0}
+    - target: {fileID: 6611153959131336507, guid: 22f6112bfd490f2408aa4a68c4c02939, type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6611153959131336507, guid: 22f6112bfd490f2408aa4a68c4c02939, type: 3}
       propertyPath: gameCamera
@@ -1807,6 +1815,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Ghost2Canvas
       objectReference: {fileID: 0}
+    - target: {fileID: 5816254812338941914, guid: 22f6112bfd490f2408aa4a68c4c02939, type: 3}
+      propertyPath: m_PresetInfoIsWorld
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5816254813939196669, guid: 22f6112bfd490f2408aa4a68c4c02939, type: 3}
       propertyPath: m_Name
       value: 2
@@ -1816,6 +1828,10 @@ PrefabInstance:
       value: '2
 
 '
+      objectReference: {fileID: 0}
+    - target: {fileID: 6611153959131336507, guid: 22f6112bfd490f2408aa4a68c4c02939, type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6611153959131336507, guid: 22f6112bfd490f2408aa4a68c4c02939, type: 3}
       propertyPath: gameCamera
@@ -9405,6 +9421,10 @@ PrefabInstance:
     - target: {fileID: 5816254812338941914, guid: 22f6112bfd490f2408aa4a68c4c02939, type: 3}
       propertyPath: m_PresetInfoIsWorld
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6611153959131336507, guid: 22f6112bfd490f2408aa4a68c4c02939, type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6611153959131336507, guid: 22f6112bfd490f2408aa4a68c4c02939, type: 3}
       propertyPath: gameCamera
