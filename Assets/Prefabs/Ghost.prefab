@@ -149,6 +149,9 @@ MonoBehaviour:
   spriteRenderer: {fileID: 760651556184117667}
   animatorController: {fileID: 760651556184117666}
   dust: {fileID: 3720454329597970366}
+  isDead: 0
+  isScared: 0
+  isRecovering: 0
 --- !u!114 &-999292096996989612
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -168,6 +171,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 760651556184117669}
     m_Modifications:
+    - target: {fileID: -1047438033782595230, guid: 29addd0ee9e358049933bb9b0aff43d8, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8826550836169081216, guid: 29addd0ee9e358049933bb9b0aff43d8, type: 3}
       propertyPath: m_Name
       value: GhostCanvas
@@ -255,6 +262,10 @@ PrefabInstance:
     - target: {fileID: 8826550836169081217, guid: 29addd0ee9e358049933bb9b0aff43d8, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8826550836169081228, guid: 29addd0ee9e358049933bb9b0aff43d8, type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 29addd0ee9e358049933bb9b0aff43d8, type: 3}
