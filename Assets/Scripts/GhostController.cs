@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using Debug = UnityEngine.Debug;
@@ -27,9 +28,9 @@ public class GhostController : MonoBehaviour
     private GameObject pacStudent;
     private Vector3 pacStudentPosition;
     private PacStudentController pacStudentController;
-    private bool isDead = false;
-    private bool isScared = false;
-    private bool isRecovering = false;
+    public bool isDead = false;
+    public bool isScared = false;
+    public bool isRecovering = false;
     private bool gameStarted = false;
     private Vector3? spawnExit = null;
     private Vector3 spawnCentre = new Vector3(4.5f, -9.5f);
@@ -292,8 +293,41 @@ public class GhostController : MonoBehaviour
                             isDead = false;
 
                             // Reset to whatever other ant states are in
+                            var otherGhostControllers = GameObject.FindGameObjectsWithTag("Ant").ToList()
+                                .Select(go => go.GetComponent<GhostController>()).ToList();
+                            var otherGhosts = otherGhostControllers.ToList();
+
+                            var otherGhostIsScared = otherGhosts[0].isScared;
+                            var otherGhostIsRecovering = otherGhosts[0].isRecovering;
+                            var otherGhostIsNormal = !otherGhosts[0].isScared &&
+                                !otherGhosts[0].isRecovering;
+                            var otherGhostIsDead = otherGhosts[0].isDead;
+
+                            if (otherGhostIsScared)
+                            {
+                                isScared = true;
+                            }
+                            else if (otherGhostIsRecovering)
+                            {
+                                isRecovering = true;
+                            }
+                            else if (otherGhostIsNormal)
+                            {
+                                isDead = false;
+                                isRecovering = false;
+                            }
+                            else if (otherGhostIsDead)
+                            {
+                                isDead = true;
+                                deadTimer.Reset();
+                            }
+
 
                             // Change music if all ants are not dead
+                            if (otherGhosts.All(g => !g.isDead))
+                            {
+                                // Do something here boss
+                            }
                         }
                     }
 
