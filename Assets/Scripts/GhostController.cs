@@ -291,6 +291,7 @@ public class GhostController : MonoBehaviour
                         {
                             animatorController.SetBool("AntIsDeadParam", false);
                             isDead = false;
+                            deadTimer.Stop();
 
                             // Reset to whatever other ant states are in
                             var otherGhostControllers = GameObject.FindGameObjectsWithTag("Ant").ToList()
@@ -306,10 +307,12 @@ public class GhostController : MonoBehaviour
                             if (otherGhostIsScared)
                             {
                                 isScared = true;
+                                animatorController.SetBool("AntIsScaredParam", true);
                             }
                             else if (otherGhostIsRecovering)
                             {
                                 isRecovering = true;
+                                animatorController.SetBool("AntIsRecoveringParam", true);
                             }
                             else if (otherGhostIsNormal)
                             {
