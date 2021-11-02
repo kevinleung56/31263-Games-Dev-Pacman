@@ -289,20 +289,18 @@ public class GhostController : MonoBehaviour
 
     bool IsNotGoingIntoSpawnOrTunnel(Vector3 hypotheticalPosition)
     {
-        if (!isScared && !isDead) {
-            if (!CheckGhostIsInSpawn() &&
-                (hypotheticalPosition == new Vector3(4.5f, -11.5f) ||
-                hypotheticalPosition == new Vector3(5.5f, -11.5f) ||
-                hypotheticalPosition == new Vector3(4.5f, -7.5f) ||
-                hypotheticalPosition == new Vector3(5.5f, -7.5f)))
-            {
-                return false; // We don't want ghosts to go back into spawn if they're alive
-            }
-            else if (hypotheticalPosition == new Vector3(-3.5f, -9.5f) ||
-                hypotheticalPosition == new Vector3(13.5f, -9.5f))
-            {
-                return false; // We don't want ghosts to use tunnels no matter what
-            }
+        if (!isScared && !isDead && !CheckGhostIsInSpawn() &&
+            (hypotheticalPosition == new Vector3(4.5f, -11.5f) ||
+            hypotheticalPosition == new Vector3(5.5f, -11.5f) ||
+            hypotheticalPosition == new Vector3(4.5f, -7.5f) ||
+            hypotheticalPosition == new Vector3(5.5f, -7.5f)))
+        {
+            return false; // We don't want ghosts to go back into spawn if they're alive
+        }
+        else if (hypotheticalPosition == new Vector3(-3.5f, -9.5f) ||
+            hypotheticalPosition == new Vector3(13.5f, -9.5f))
+        {
+            return false; // We don't want ghosts to use tunnels no matter what
         }
 
         return true;
