@@ -148,6 +148,15 @@ public class GhostController : MonoBehaviour
         }
     }
 
+    void MoveToCentreWithNoCollisions(float duration = 3.25f)
+    {
+        if (!tweener.TweenExists(ghost.transform))
+        {
+            OnGhostMove();
+            AddTweenToPosition(spawnCentre, duration);
+        }
+    }
+
     bool MoveLeft(Vector3? vector = null, float duration = 0.25f)
     {
         if (IsBlockedByWall(Directions.Left))
@@ -275,15 +284,21 @@ public class GhostController : MonoBehaviour
                     else
                     {
                         var timeLeft = 5 - deadTimer.Elapsed.Seconds;
+                        var arrivedAtSpawnCentre = CheckGhostIsInSpawn();
 
-                        if (timeLeft <= 0)
+                        if (timeLeft <= 0 || arrivedAtSpawnCentre)
                         {
                             animatorController.SetBool("AntIsDeadParam", false);
                             isDead = false;
+
+                            // Reset to whatever other ant states are in
+
+                            // Change music if all ants are not dead
                         }
                     }
 
-                    GoToSpawn(); // Lerp towards the centre
+                    MoveToCentreWithNoCollisions();
+                    /*GoToSpawn(); */// Lerp towards the centre
                 }
             }
         }
@@ -462,16 +477,16 @@ public class GhostController : MonoBehaviour
         }
     }
 
-    void GoToSpawn()
-    {
-        var nextMove = GetDirectionToTarget(spawnCentre, overrideSpawnCheck: true);
+    //void GoToSpawn()
+    //{
+    //    var nextMove = GetDirectionToTarget(spawnCentre, overrideSpawnCheck: true);
 
-        if (nextMove != null)
-        {
-            lastMove = nextMove;
-            MoveGhost(nextMove, 0.1f);
-        }
-    }
+    //    if (nextMove != null)
+    //    {
+    //        lastMove = nextMove;
+    //        MoveGhost(nextMove, 0.1f);
+    //    }
+    //}
 
     bool CheckGhostIsInSpawn()
     {
