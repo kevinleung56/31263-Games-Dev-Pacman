@@ -322,6 +322,7 @@ public class GhostController : MonoBehaviour
                             else if (otherGhostIsDead)
                             {
                                 isDead = true;
+                                animatorController.SetBool("AntIsDeadParam", true);
                                 deadTimer.Reset();
                             }
 
