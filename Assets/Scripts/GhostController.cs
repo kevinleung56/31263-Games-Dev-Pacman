@@ -37,6 +37,7 @@ public class GhostController : MonoBehaviour
     private int ghostType = -1;
     private Directions? lastMove;
     private Stopwatch deadTimer = new Stopwatch();
+    private int ghost4Cycle;
 
     private enum Directions { Up, Down, Left, Right };
 
@@ -489,6 +490,97 @@ public class GhostController : MonoBehaviour
         return nextMove;
     }
 
+    Directions? Ghost4Behaviour()
+    {
+        if (ghost4Cycle == 0)
+        {
+            var directLeft = new Vector3(-2.5f, -9.5f);
+            if (ghost.transform.position == directLeft)
+            {
+                ghost4Cycle++;
+            }
+            else
+            {
+                return GetDirectionToTarget(directLeft);
+            }
+        }
+        else if (ghost4Cycle == 1)
+        {
+            var midLeft = new Vector3(-7.5f, -3.5f);
+            if (ghost.transform.position == midLeft)
+            {
+                ghost4Cycle++;
+            }
+            else
+            {
+                return GetDirectionToTarget(midLeft);
+            }
+        }
+        else if (ghost4Cycle == 2)
+        {
+            var topLeft = new Vector3(-7.5f, 3.5f);
+            if (ghost.transform.position == topLeft)
+            {
+                ghost4Cycle++;
+            }
+            else
+            {
+                return GetDirectionToTarget(topLeft);
+            }
+        }
+        else if (ghost4Cycle == 3)
+        {
+            var topRight = new Vector3(17.5f, 3.5f);
+            if (ghost.transform.position == topRight)
+            {
+                ghost4Cycle++;
+            }
+            else
+            {
+                return GetDirectionToTarget(topRight);
+            }
+        }
+        else if (ghost4Cycle == 4)
+        {
+            var bottomRight = new Vector3(17.5f, -22.5f);
+            if (ghost.transform.position == bottomRight)
+            {
+                ghost4Cycle++;
+            }
+            else
+            {
+                return GetDirectionToTarget(bottomRight);
+            }
+        }
+        else if (ghost4Cycle == 5)
+        {
+            var midBot = new Vector3(3.5f, -22.5f);
+            if (ghost.transform.position == midBot)
+            {
+                ghost4Cycle++;
+            }
+            else
+            {
+                return GetDirectionToTarget(midBot);
+            }
+        }
+        else if (ghost4Cycle == 6)
+        {
+            var bottomLeft = new Vector3(-7.5f, -22.5f);
+            if (ghost.transform.position == bottomLeft)
+            {
+                ghost4Cycle = 1;
+            }
+            else
+            {
+                return GetDirectionToTarget(bottomLeft);
+            }
+        }
+
+        return null;
+    }
+
+
     void GetOutOfSpawn()
     {
         var positiveOrNegativeRNG = Random.Range(0f, 1f);
@@ -554,6 +646,7 @@ public class GhostController : MonoBehaviour
         else if (ghostType == 4)
         {
             // Move clockwise around map
+            nextMove = Ghost4Behaviour();
         }
 
         return nextMove;
