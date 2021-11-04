@@ -198,18 +198,15 @@ public class PacStudentController : MonoBehaviour
             if (!collided)
             {
                 CreateWallDustTrail();
-            }
-            else
-            {
-                StopWallDustTrail();
+
+                if (!audioWallCollision.isPlaying)
+                {
+                    audioWallCollision.Play();
+                }
             }
 
             collided = true;
 
-            if (!audioWallCollision.isPlaying)
-            {
-                audioWallCollision.Play();
-            }
             return false;
         }
 
@@ -232,18 +229,15 @@ public class PacStudentController : MonoBehaviour
             if (!collided)
             {
                 CreateWallDustTrail();
-            }
-            else
-            {
-                StopWallDustTrail();
+
+                if (!audioWallCollision.isPlaying)
+                {
+                    audioWallCollision.Play();
+                }
             }
 
             collided = true;
-
-            if (!audioWallCollision.isPlaying)
-            {
-                audioWallCollision.Play();
-            }
+            
             return false;
         }
 
@@ -266,18 +260,15 @@ public class PacStudentController : MonoBehaviour
             if (!collided)
             {
                 CreateWallDustTrail();
-            }
-            else
-            {
-                StopWallDustTrail();
+
+                if (!audioWallCollision.isPlaying)
+                {
+                    audioWallCollision.Play();
+                }
             }
 
             collided = true;
-
-            if (!audioWallCollision.isPlaying)
-            {
-                audioWallCollision.Play();
-            }
+            
             return false;
         }
 
@@ -301,18 +292,15 @@ public class PacStudentController : MonoBehaviour
             if (!collided)
             {
                 CreateWallDustTrail();
-            }
-            else
-            {
-                StopWallDustTrail();
+
+                if (!audioWallCollision.isPlaying)
+                {
+                    audioWallCollision.Play();
+                }
             }
 
             collided = true;
 
-            if (!audioWallCollision.isPlaying)
-            {
-                audioWallCollision.Play();
-            }
             return false;
         }
 
