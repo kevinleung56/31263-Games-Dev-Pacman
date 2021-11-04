@@ -36,6 +36,9 @@ public class PacStudentController : MonoBehaviour
     [SerializeField]
     private ParticleSystem dust;
 
+    [SerializeField]
+    private ParticleSystem wallDust;
+
     private Tweener tweener;
     private GameObject scoreObject;
     private GameObject ghostTimerLabelObject;
@@ -58,6 +61,7 @@ public class PacStudentController : MonoBehaviour
     public bool gameStarted = false;
     public bool gameOver = false;
     private int pelletsLeft;
+    private bool collided = false;
 
     private enum Directions { Up, Down, Left, Right };
     private enum GhostState { Walking, Scared, Recovering, Dead };
@@ -108,7 +112,7 @@ public class PacStudentController : MonoBehaviour
     bool IsBlockedByWall(Directions directionToGo)
     {
         var facingDirection = IdentifyFacingDirection();
-        Vector2? direction = null;
+        Vector3? direction = null;
 
         if (facingDirection == Directions.Up || facingDirection == Directions.Down)
         {
@@ -151,7 +155,7 @@ public class PacStudentController : MonoBehaviour
 
         if (direction != null)
         {
-            var hit = Physics2D.Raycast(pacStudent.transform.position, (Vector2)direction, 1);
+            var hit = Physics2D.Raycast(pacStudent.transform.position, (Vector3)direction, 1);
 
             if (hit.collider != null && hit.collider.gameObject.CompareTag("Wall"))
             {
@@ -190,6 +194,18 @@ public class PacStudentController : MonoBehaviour
         {
             animatorController.SetBool("MoveLeftRightParam", false);
             StopDustTrail();
+            
+            if (!collided)
+            {
+                CreateWallDustTrail();
+            }
+            else
+            {
+                StopWallDustTrail();
+            }
+
+            collided = true;
+
             if (!audioWallCollision.isPlaying)
             {
                 audioWallCollision.Play();
@@ -197,6 +213,7 @@ public class PacStudentController : MonoBehaviour
             return false;
         }
 
+        collided = false;
         var vectorToMove = vector == null ? new Vector3(-1.0f, 0.0f, 0.0f) : (Vector3)vector;
         OnPlayerMove();
         spriteRenderer.flipX = false;
@@ -211,6 +228,18 @@ public class PacStudentController : MonoBehaviour
         {
             animatorController.SetBool("MoveLeftRightParam", false);
             StopDustTrail();
+
+            if (!collided)
+            {
+                CreateWallDustTrail();
+            }
+            else
+            {
+                StopWallDustTrail();
+            }
+
+            collided = true;
+
             if (!audioWallCollision.isPlaying)
             {
                 audioWallCollision.Play();
@@ -218,6 +247,7 @@ public class PacStudentController : MonoBehaviour
             return false;
         }
 
+        collided = false;
         var vectorToMove = vector == null ? new Vector3(1.0f, 0.0f, 0.0f) : (Vector3)vector;
         OnPlayerMove();
         spriteRenderer.flipX = true;
@@ -232,6 +262,18 @@ public class PacStudentController : MonoBehaviour
         {
             animatorController.SetBool("MoveLeftRightParam", false);
             StopDustTrail();
+
+            if (!collided)
+            {
+                CreateWallDustTrail();
+            }
+            else
+            {
+                StopWallDustTrail();
+            }
+
+            collided = true;
+
             if (!audioWallCollision.isPlaying)
             {
                 audioWallCollision.Play();
@@ -239,6 +281,7 @@ public class PacStudentController : MonoBehaviour
             return false;
         }
 
+        collided = false;
         var vectorToMove = vector == null ? new Vector3(0.0f, 1.0f, 1.0f) : (Vector3)vector;
         OnPlayerMove();
         spriteRenderer.flipX = true;
@@ -254,6 +297,18 @@ public class PacStudentController : MonoBehaviour
         {
             animatorController.SetBool("MoveLeftRightParam", false);
             StopDustTrail();
+
+            if (!collided)
+            {
+                CreateWallDustTrail();
+            }
+            else
+            {
+                StopWallDustTrail();
+            }
+
+            collided = true;
+
             if (!audioWallCollision.isPlaying)
             {
                 audioWallCollision.Play();
@@ -261,6 +316,7 @@ public class PacStudentController : MonoBehaviour
             return false;
         }
 
+        collided = false;
         var vectorToMove = vector == null ? new Vector3(0.0f, -1.0f, 0.0f) : (Vector3)vector;
         OnPlayerMove();
         spriteRenderer.flipX = false;
@@ -272,13 +328,13 @@ public class PacStudentController : MonoBehaviour
 
     void TeleportTunnelIfNeeded()
     {
-        if ((Vector2)pacStudent.transform.position == new Vector2(19.5f, -9.5f)) // Right tunnel
+        if (pacStudent.transform.position == new Vector3(19.5f, -9.5f)) // Right tunnel
         {
-            pacStudent.transform.position = new Vector2(-8.5f, -9.5f); // Teleportation
+            pacStudent.transform.position = new Vector3(-8.5f, -9.5f); // Teleportation
         }
-        else if ((Vector2)pacStudent.transform.position == new Vector2(-9.5f, -9.5f)) // Left tunnel
+        else if (pacStudent.transform.position == new Vector3(-9.5f, -9.5f)) // Left tunnel
         {
-            pacStudent.transform.position = new Vector2(18.5f, -9.5f); // Teleportation
+            pacStudent.transform.position = new Vector3(18.5f, -9.5f); // Teleportation
         }
     }
 
@@ -678,6 +734,19 @@ public class PacStudentController : MonoBehaviour
                     animatorController.SetBool("WormIsDeadParam", true);
                 }
             }
+        }
+    }
+
+    void CreateWallDustTrail()
+    {
+        wallDust.Play();
+    }
+
+    void StopWallDustTrail()
+    {
+        if (wallDust.isPlaying)
+        {
+            wallDust.Stop();
         }
     }
 }

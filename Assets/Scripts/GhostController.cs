@@ -74,7 +74,7 @@ public class GhostController : MonoBehaviour
     bool IsBlockedByWall(Directions directionToGo)
     {
         var facingDirection = IdentifyFacingDirection();
-        Vector2? direction = null;
+        Vector3? direction = null;
 
         if (facingDirection == Directions.Up || facingDirection == Directions.Down)
         {
@@ -117,7 +117,7 @@ public class GhostController : MonoBehaviour
 
         if (direction != null)
         {
-            var hit = Physics2D.Raycast(ghost.transform.position, (Vector2)direction, 1);
+            var hit = Physics2D.Raycast(ghost.transform.position, (Vector3)direction, 1);
 
             if (hit.collider != null && hit.collider.gameObject.CompareTag("Wall"))
             {

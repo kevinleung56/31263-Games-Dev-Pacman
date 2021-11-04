@@ -45,21 +45,21 @@ public class LevelGenerator : MonoBehaviour
 
         GenerateLevel0Layout(); // Second quadrant
         gamemap.transform.Rotate(new Vector3(0, 0, -90f));
-        gamemap.transform.position = new Vector2(-8.5f, 4.5f);
+        gamemap.transform.position = new Vector3(-8.5f, 4.5f);
 
         GenerateQuadrant(
-            new Vector2(18.5f, 4.5f),
-            new Vector2(-1, 1),
+            new Vector3(18.5f, 4.5f),
+            new Vector3(-1, 1),
             Quaternion.Euler(0, 0, 90)); // First quadrant
 
         GenerateQuadrant(
-            new Vector2(-8.5f, -23.5f), // Y-axis overlap by 1 unit to make way for tunnel
-            new Vector2(1, -1),
+            new Vector3(-8.5f, -23.5f), // Y-axis overlap by 1 unit to make way for tunnel
+            new Vector3(1, -1),
             Quaternion.Euler(0, 0, 90)); // Third quadrant
 
         GenerateQuadrant(
-            new Vector2(18.5f, -23.5f), // Y-axis overlap by 1 unit to make way for tunnel
-            new Vector2(-1, -1),
+            new Vector3(18.5f, -23.5f), // Y-axis overlap by 1 unit to make way for tunnel
+            new Vector3(-1, -1),
             Quaternion.Euler(0, 0, -90)); // Fourth quadrant
     }
 
@@ -73,7 +73,7 @@ public class LevelGenerator : MonoBehaviour
 
                 if (spriteValue != 0) // If not empty tile
                 {
-                    newTile = Instantiate(tileObjects[spriteValue], new Vector2(x, y), Quaternion.identity, gamemap.transform);
+                    newTile = Instantiate(tileObjects[spriteValue], new Vector3(x, y), Quaternion.identity, gamemap.transform);
                     newTile.transform.rotation = SetRotation(x, y, spriteValue);
                 }
             }
@@ -102,8 +102,8 @@ public class LevelGenerator : MonoBehaviour
 
     Quaternion CornerRotation(int x, int y) // Get rotation of corner from coordinate
     {
-        var leftHit = Physics2D.Raycast(new Vector2(x, y), -newTile.transform.right, 1);
-        var downHit = Physics2D.Raycast(new Vector2(x, y), -newTile.transform.up, 1);
+        var leftHit = Physics2D.Raycast(new Vector3(x, y), -newTile.transform.right, 1);
+        var downHit = Physics2D.Raycast(new Vector3(x, y), -newTile.transform.up, 1);
         var leftExists = leftHit.collider != null && leftHit.collider.gameObject.CompareTag("Wall");
         var downExists = downHit.collider != null && downHit.collider.gameObject.CompareTag("Wall");
         if (leftExists && downExists) // If in contact with left and down
@@ -144,7 +144,7 @@ public class LevelGenerator : MonoBehaviour
 
     Quaternion WallRotation(int x, int y) // Get rotation of wall from coordinate
     {
-        var leftHit = Physics2D.Raycast(new Vector2(x, y), -newTile.transform.right, 1);
+        var leftHit = Physics2D.Raycast(new Vector3(x, y), -newTile.transform.right, 1);
         var leftExists = leftHit.collider != null && leftHit.collider.gameObject.CompareTag("Wall");
 
         if (leftExists) // If left contact
