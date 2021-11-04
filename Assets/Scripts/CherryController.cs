@@ -25,7 +25,7 @@ public class CherryController : MonoBehaviour
 
     public static int tileMapSizeX = 27; // top left -8.5, 4.5
     public static int tileMapSizeY = 28; // bottom right 18.5, -23.5 // total size = (27, 28)
-    public static Vector2 centreOfMapPosition = new Vector2(5f, -9.5f); // bottom right 18.5, -23.5 // total size = (27, 28)
+    public static Vector3 centreOfMapPosition = new Vector3(5f, -9.5f); // bottom right 18.5, -23.5 // total size = (27, 28)
     // centre point is 5, -9.5
 
 
@@ -61,24 +61,25 @@ public class CherryController : MonoBehaviour
         }
     }
 
-    Vector2 GenerateRandomPointOutOfBounds()
+    Vector3 GenerateRandomPointOutOfBounds()
     {
-        var randomPointLeftOfCameraX = Random.Range(-20.0f, -10.0f);
-        var randomPointRightOfCameraX = Random.Range(20.0f, 30.0f);
-        var randomPointAboveCameraY = Random.Range(-10.0f, 30.0f);
-        var randomPointBelowCameraY = Random.Range(-10.0f, 30.0f);
+        Vector3 randomPosition;
+
+        var randomPointLeftOfCameraX = Random.Range(-20f, 0);
+        var randomPointRightOfCameraX = Random.Range(Screen.width, Screen.width + 20f);
+        var randomPointAboveCameraY = Random.Range(Screen.height, Screen.height + 20f);
+        var randomPointBelowCameraY = Random.Range(-20.0f, 0);
 
         var takeLeftOrRight = Random.Range(0, 2);
         var takeUpOrDown = Random.Range(0, 2);
 
-        Vector2 randomPosition;
         float randomPositionX;
         float randomPositionY;
 
         randomPositionX = takeLeftOrRight == 0 ? randomPointLeftOfCameraX : randomPointRightOfCameraX;
         randomPositionY = takeUpOrDown == 0 ? randomPointAboveCameraY : randomPointBelowCameraY;
 
-        randomPosition = new Vector2(randomPositionX, randomPositionY);
+        randomPosition = Camera.main.ScreenToWorldPoint(new Vector3(randomPositionX, randomPositionY));
 
         return randomPosition;
     }
