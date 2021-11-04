@@ -25,6 +25,9 @@ public class PacStudentController : MonoBehaviour
     private AudioSource audioOnMoveNoPellet;
 
     [SerializeField]
+    private AudioSource audioWallCollision;
+
+    [SerializeField]
     private ParticleSystem dust;
 
     private Tweener tweener;
@@ -178,6 +181,10 @@ public class PacStudentController : MonoBehaviour
         {
             animatorController.SetBool("MoveLeftRightParam", false);
             StopDustTrail();
+            if (!audioWallCollision.isPlaying)
+            {
+                audioWallCollision.Play();
+            }
             return false;
         }
 
@@ -195,6 +202,10 @@ public class PacStudentController : MonoBehaviour
         {
             animatorController.SetBool("MoveLeftRightParam", false);
             StopDustTrail();
+            if (!audioWallCollision.isPlaying)
+            {
+                audioWallCollision.Play();
+            }
             return false;
         }
 
@@ -212,6 +223,10 @@ public class PacStudentController : MonoBehaviour
         {
             animatorController.SetBool("MoveLeftRightParam", false);
             StopDustTrail();
+            if (!audioWallCollision.isPlaying)
+            {
+                audioWallCollision.Play();
+            }
             return false;
         }
 
@@ -230,6 +245,10 @@ public class PacStudentController : MonoBehaviour
         {
             animatorController.SetBool("MoveLeftRightParam", false);
             StopDustTrail();
+            if (!audioWallCollision.isPlaying)
+            {
+                audioWallCollision.Play();
+            }
             return false;
         }
 
