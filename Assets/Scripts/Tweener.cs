@@ -58,4 +58,9 @@ public class Tweener : MonoBehaviour
         activeTweens.Add(new Tween(targetObject, startPos, endPos, Time.time, duration));
         return true;
     }
+
+    public void ClearTweens()
+    {
+        activeTweens.Clear();
+    }
 }

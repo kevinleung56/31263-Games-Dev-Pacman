@@ -28,6 +28,9 @@ public class PacStudentController : MonoBehaviour
     private AudioSource audioWallCollision;
 
     [SerializeField]
+    private AudioSource audioDeathSFX;
+
+    [SerializeField]
     private ParticleSystem dust;
 
     private Tweener tweener;
@@ -341,7 +344,6 @@ public class PacStudentController : MonoBehaviour
                 PlayerPrefs.SetString("time", currentTimeFormatted);
             }
 
-            gameOver = false;
             SceneManager.LoadSceneAsync(1);
         }
     }
@@ -641,21 +643,25 @@ public class PacStudentController : MonoBehaviour
                 var healthToLose = healthObjects.Find(x => x.name.Contains(playerHealth.ToString()));
                 playerHealth--;
                 healthToLose.SetActive(false);
-                /*
-                 * PacStudent dies and loses a life. Update the UI element for this.
-                 *
-                 * Play a particle effect around PacStudent the spot of PacStudents death.
-                 *
-                 * Respawn PacStudent by moving them to the top‐left hand corner,
-                 * where they started the game, and wait for player input.*/
 
                 Debug.Log(playerHealth);
 
                 if (playerHealth == 0) // Player is dead
                 {
-                    // Play particle effect
-                    Debug.Log("Supposed to be dead");
-                    pacStudent.transform.position = new Vector2(-7.5f, 3.5f);
+                    //Play particle effect
+                    if (!audioDeathSFX.isPlaying)
+                    {
+                        audioDeathSFX.Play();
+                    }
+                    
+                    // Stop lerp immediately
+                    if (tweener.TweenExists(pacStudent.transform))
+                    {
+                        tweener.ClearTweens();
+                    }
+
+                    pacStudent.transform.position = new Vector3(-7.5f, 3.5f);
+                    animatorController.SetBool("WormIsDeadParam", true);
                 }
             }
         }
