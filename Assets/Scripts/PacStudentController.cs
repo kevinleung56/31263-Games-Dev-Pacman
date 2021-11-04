@@ -25,6 +25,9 @@ public class PacStudentController : MonoBehaviour
     private AudioSource audioOnMoveNoPellet;
 
     [SerializeField]
+    private AudioSource audioOnMovePellet;
+
+    [SerializeField]
     private AudioSource audioWallCollision;
 
     [SerializeField]
@@ -94,8 +97,11 @@ public class PacStudentController : MonoBehaviour
 
     void OnPlayerMove()
     {
+        if (!audioOnMoveNoPellet.isPlaying)
+        {
+            audioOnMoveNoPellet.Play();
+        }
         pacStudent.transform.rotation = Quaternion.identity;
-        audioOnMoveNoPellet.Play();
         CreateDustTrail();
     }
 
@@ -610,6 +616,14 @@ public class PacStudentController : MonoBehaviour
         Debug.Log("Collision Enter: " + collision.gameObject + " : " + collision.transform.position);
         if (collision.gameObject.CompareTag("Pellet"))
         {
+            if (!audioOnMovePellet.isPlaying)
+            {
+                if (audioOnMoveNoPellet.isPlaying)
+                {
+                    audioOnMoveNoPellet.Stop();
+                }
+                audioOnMovePellet.Play();
+            }
             // Add 10 to score
             score.text = (int.Parse(score.text) + 10).ToString();
             pelletsLeft--;
@@ -653,7 +667,7 @@ public class PacStudentController : MonoBehaviour
                     {
                         audioDeathSFX.Play();
                     }
-                    
+
                     // Stop lerp immediately
                     if (tweener.TweenExists(pacStudent.transform))
                     {
