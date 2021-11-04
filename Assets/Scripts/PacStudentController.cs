@@ -62,6 +62,8 @@ public class PacStudentController : MonoBehaviour
     public bool gameOver = false;
     private int pelletsLeft;
     private bool collided = false;
+    private Vector3 wallDustInitialScale;
+    private Quaternion wallDustInitialRotate;
 
     private enum Directions { Up, Down, Left, Right };
     private enum GhostState { Walking, Scared, Recovering, Dead };
@@ -88,6 +90,8 @@ public class PacStudentController : MonoBehaviour
         gameStartRunningTimer = new Stopwatch();
         gameStartRunningTimer.Start();
 
+        wallDustInitialScale = wallDust.transform.localScale;
+        wallDustInitialRotate = wallDust.transform.rotation;
         gameOverObject.SetActive(false);
         ghostTimerLabelObject.SetActive(false);
         gameTimer.text = "00:00:00";
@@ -197,6 +201,8 @@ public class PacStudentController : MonoBehaviour
             
             if (!collided)
             {
+                wallDust.transform.localScale = wallDustInitialScale;
+                wallDust.transform.rotation = wallDustInitialRotate;
                 CreateWallDustTrail();
 
                 if (!audioWallCollision.isPlaying)
@@ -228,6 +234,8 @@ public class PacStudentController : MonoBehaviour
 
             if (!collided)
             {
+                wallDust.transform.localScale = wallDustInitialScale * -1;
+                wallDust.transform.rotation = Quaternion.Euler(180f, 0f, 0f);
                 CreateWallDustTrail();
 
                 if (!audioWallCollision.isPlaying)
@@ -259,6 +267,8 @@ public class PacStudentController : MonoBehaviour
 
             if (!collided)
             {
+                wallDust.transform.localScale = wallDustInitialScale * -1;
+                wallDust.transform.rotation = Quaternion.Euler(-90f, 180f, 0f);
                 CreateWallDustTrail();
 
                 if (!audioWallCollision.isPlaying)
@@ -291,6 +301,8 @@ public class PacStudentController : MonoBehaviour
 
             if (!collided)
             {
+                wallDust.transform.localScale = wallDustInitialScale;
+                wallDust.transform.rotation = Quaternion.Euler(-90f, 0f, 0f);
                 CreateWallDustTrail();
 
                 if (!audioWallCollision.isPlaying)
