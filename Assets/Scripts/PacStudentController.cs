@@ -7,7 +7,6 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using Debug = UnityEngine.Debug;
 
 public class PacStudentController : MonoBehaviour
 {
@@ -746,8 +745,6 @@ public class PacStudentController : MonoBehaviour
                 var healthToLose = healthObjects.Find(x => x.name.Contains(playerHealth.ToString()));
                 playerHealth--;
                 healthToLose.SetActive(false);
-
-                Debug.Log(playerHealth);
 
                 if (playerHealth == 0) // Player is dead
                 {
