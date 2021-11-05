@@ -38,7 +38,8 @@ public class GhostControllerInnovation : MonoBehaviour
     private Directions? lastMove;
     private Stopwatch deadTimer = new Stopwatch();
     private int ghost4Cycle;
-    private bool nearPlayer = false;
+    private Stopwatch coolDownTimer = new Stopwatch();
+    private bool superFast = false;
     private bool needToSlowDown = false;
 
     private enum Directions { Up, Down, Left, Right };
@@ -239,17 +240,35 @@ public class GhostControllerInnovation : MonoBehaviour
 
             pacStudentPosition = pacStudent.transform.position;
 
-            if (ghostType == 5)
-            {
-                var currentPosition = ghost.transform.position;
-                var headingVector = pacStudentPosition - currentPosition;
-                var distanceToTarget = headingVector.magnitude;
-                nearPlayer = distanceToTarget <= 12;
-                needToSlowDown = distanceToTarget < 5;
-            }
-
             if (!IsAlreadyMoving())
             {
+                if (ghostType == 5)
+                {
+                    var currentPosition = ghost.transform.position;
+                    var headingVector = pacStudentPosition - currentPosition;
+                    var distanceToTarget = headingVector.magnitude;
+                    superFast = distanceToTarget <= 12;
+                    needToSlowDown = distanceToTarget <= 5;
+
+                    if (needToSlowDown && !coolDownTimer.IsRunning)
+                    {
+                        coolDownTimer.Start();
+                    }
+                    else if (coolDownTimer.IsRunning)
+                    {
+                        if (coolDownTimer.Elapsed.Seconds < 5f)
+                        {
+                            superFast = false;
+                        }
+                        else
+                        {
+                            coolDownTimer.Stop();
+                            coolDownTimer.Reset();
+                        }
+                    }
+
+                }
+
                 if (!isScared && !isDead)
                 {
                     if (deadTimer.IsRunning)
@@ -271,17 +290,16 @@ public class GhostControllerInnovation : MonoBehaviour
                             lastMove = (Directions)nextMove;
                             if (ghostType == 5)
                             {
-                                if (nearPlayer)
+                                if (needToSlowDown)
+                                {
+                                    MoveGhost((Directions)nextMove, 0.4f);
+                                }
+                                else if (superFast)
                                 {
                                     MoveGhost((Directions)nextMove, 0.125f);
                                 }
-                                else if (needToSlowDown)
-                                {
-                                    MoveGhost((Directions)nextMove, 0.25f);
-                                }
                                 else
                                 {
-                                    needToSlowDown = false;
                                     MoveGhost((Directions)nextMove, 0.5f);
                                 }
                             }
@@ -323,6 +341,13 @@ public class GhostControllerInnovation : MonoBehaviour
                             animatorController.SetBool("AntIsDeadParam", false);
                             isDead = false;
                             deadTimer.Stop();
+                            if (ghostType == 5)
+                            {
+                                superFast = false;
+                                needToSlowDown = false;
+                                coolDownTimer.Stop();
+                                coolDownTimer.Reset();
+                            }
 
                             // Reset to whatever other ant states are in
                             var otherGhostControllers = GameObject.FindGameObjectsWithTag("Ant").ToList()
@@ -618,7 +643,7 @@ public class GhostControllerInnovation : MonoBehaviour
 
     Directions? Ghost5Behaviour()
     {
-        if (nearPlayer)
+        if (superFast || needToSlowDown)
         {
             // Rush
             return Ghost2Behaviour();
