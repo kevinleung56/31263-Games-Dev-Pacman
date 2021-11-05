@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
-using Debug = UnityEngine.Debug;
 
 public class GhostController : MonoBehaviour
 {
