@@ -412,7 +412,7 @@ public class PacStudentController : MonoBehaviour
                 PlayerPrefs.SetString("time", currentTimeFormatted);
             }
 
-            SceneManager.LoadSceneAsync(1);
+            SceneManager.LoadSceneAsync(0);
         }
     }
 

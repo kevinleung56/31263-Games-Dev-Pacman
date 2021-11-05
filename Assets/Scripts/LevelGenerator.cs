@@ -171,6 +171,6 @@ public class LevelGenerator : MonoBehaviour
 
     public void LoadStartScene()
     {
-        SceneManager.LoadSceneAsync(1);
+        SceneManager.LoadSceneAsync(0);
     }
 }

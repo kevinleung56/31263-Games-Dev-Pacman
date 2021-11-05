@@ -4,6 +4,7 @@ using UnityEngine;
 public class Tweener : MonoBehaviour
 {
     private List<Tween> activeTweens;
+    private bool acceptMoreTweens = true;
 
     // Start is called before the first frame update
     void Start()
@@ -49,7 +50,7 @@ public class Tweener : MonoBehaviour
 
     public bool AddTween(Transform targetObject, Vector3 startPos, Vector3 endPos, float duration)
     {
-        if (TweenExists(targetObject))
+        if (TweenExists(targetObject) || !acceptMoreTweens)
         {
             return false;
         }
@@ -61,5 +62,6 @@ public class Tweener : MonoBehaviour
     public void ClearTweens()
     {
         activeTweens.Clear();
+        acceptMoreTweens = false;
     }
 }

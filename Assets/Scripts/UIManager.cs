@@ -156,7 +156,7 @@ public class UIManager : MonoBehaviour
     public void LoadFirstLevel()
     {
         StopAllCoroutines();
-        SceneManager.LoadSceneAsync(0);
+        SceneManager.LoadSceneAsync(1);
     }
 
     public void LoadInnovationLevel()
