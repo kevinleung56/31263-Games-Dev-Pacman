@@ -331,7 +331,13 @@ public class GhostController : MonoBehaviour
                             // Change music if all ants are not dead
                             if (otherGhosts.All(g => !g.isDead))
                             {
-                                // Do something here boss
+                                if (!pacStudentController.normalBg.isPlaying)
+                                {
+                                    pacStudentController.normalBg.Play();
+                                }
+
+                                pacStudentController.scaredGhostsBg.Stop();
+                                pacStudentController.oneDeadGhost.Stop();
                             }
                         }
                     }

@@ -39,6 +39,12 @@ public class PacStudentController : MonoBehaviour
     [SerializeField]
     private ParticleSystem wallDust;
 
+    public AudioSource normalBg;
+
+    public AudioSource oneDeadGhost;
+
+    public AudioSource scaredGhostsBg;
+
     private Tweener tweener;
     private GameObject scoreObject;
     private GameObject ghostTimerLabelObject;
@@ -328,11 +334,12 @@ public class PacStudentController : MonoBehaviour
 
     void TeleportTunnelIfNeeded()
     {
-        if (pacStudent.transform.position == new Vector3(19.5f, -9.5f)) // Right tunnel
+        var position = pacStudent.transform.position;
+        if (position.x > 18.5 && position.y == -9.5f) // Right tunnel
         {
             pacStudent.transform.position = new Vector3(-8.5f, -9.5f); // Teleportation
         }
-        else if (pacStudent.transform.position == new Vector3(-9.5f, -9.5f)) // Left tunnel
+        else if (position.x < -8.5f && position.y == -9.5f) // Left tunnel
         {
             pacStudent.transform.position = new Vector3(18.5f, -9.5f); // Teleportation
         }
@@ -655,6 +662,14 @@ public class PacStudentController : MonoBehaviour
 
     private IEnumerator SetAllAntsScaredCoroutine()
     {
+        oneDeadGhost.Stop();
+        normalBg.Stop();
+
+        if (!scaredGhostsBg.isPlaying)
+        {
+            scaredGhostsBg.Play();
+        }
+
         SetAllAntStates(GhostState.Scared);
 
         yield return new WaitForSeconds(7);
@@ -664,6 +679,17 @@ public class PacStudentController : MonoBehaviour
         yield return new WaitForSeconds(3);
 
         SetAllAntStates(GhostState.Walking);
+
+        if (!oneDeadGhost.isPlaying)
+        {
+            scaredGhostsBg.Stop();
+            oneDeadGhost.Stop();
+
+            if (!normalBg.isPlaying)
+            {
+                normalBg.Play();
+            }
+        }
     }
 
 
@@ -707,6 +733,14 @@ public class PacStudentController : MonoBehaviour
             {
                 score.text = (int.Parse(score.text) + 300).ToString();
                 SetAntState(animator, GhostState.Dead);
+
+                scaredGhostsBg.Stop();
+                normalBg.Stop();
+
+                if (!oneDeadGhost.isPlaying)
+                {
+                    oneDeadGhost.Play();
+                }
             }
             else // Normal ant
             {
