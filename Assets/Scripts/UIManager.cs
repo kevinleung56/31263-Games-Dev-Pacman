@@ -159,4 +159,10 @@ public class UIManager : MonoBehaviour
         StopAllCoroutines();
         SceneManager.LoadSceneAsync(0);
     }
+
+    public void LoadInnovationLevel()
+    {
+        StopAllCoroutines();
+        SceneManager.LoadSceneAsync(2);
+    }
 }

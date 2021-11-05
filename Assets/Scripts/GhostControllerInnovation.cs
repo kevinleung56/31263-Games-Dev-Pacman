@@ -38,6 +38,8 @@ public class GhostControllerInnovation : MonoBehaviour
     private Directions? lastMove;
     private Stopwatch deadTimer = new Stopwatch();
     private int ghost4Cycle;
+    private bool nearPlayer = false;
+    private bool needToSlowDown = false;
 
     private enum Directions { Up, Down, Left, Right };
 
@@ -237,6 +239,15 @@ public class GhostControllerInnovation : MonoBehaviour
 
             pacStudentPosition = pacStudent.transform.position;
 
+            if (ghostType == 5)
+            {
+                var currentPosition = ghost.transform.position;
+                var headingVector = pacStudentPosition - currentPosition;
+                var distanceToTarget = headingVector.magnitude;
+                nearPlayer = distanceToTarget <= 12;
+                needToSlowDown = distanceToTarget < 5;
+            }
+
             if (!IsAlreadyMoving())
             {
                 if (!isScared && !isDead)
@@ -258,7 +269,26 @@ public class GhostControllerInnovation : MonoBehaviour
                         if (nextMove != null)
                         {
                             lastMove = (Directions)nextMove;
-                            MoveGhost((Directions)nextMove);
+                            if (ghostType == 5)
+                            {
+                                if (nearPlayer)
+                                {
+                                    MoveGhost((Directions)nextMove, 0.125f);
+                                }
+                                else if (needToSlowDown)
+                                {
+                                    MoveGhost((Directions)nextMove, 0.25f);
+                                }
+                                else
+                                {
+                                    needToSlowDown = false;
+                                    MoveGhost((Directions)nextMove, 0.5f);
+                                }
+                            }
+                            else
+                            {
+                                MoveGhost((Directions)nextMove);
+                            }
                         }
                     }
                 }
@@ -586,6 +616,19 @@ public class GhostControllerInnovation : MonoBehaviour
         return null;
     }
 
+    Directions? Ghost5Behaviour()
+    {
+        if (nearPlayer)
+        {
+            // Rush
+            return Ghost2Behaviour();
+        }
+        else
+        {
+            return Ghost3Behaviour();
+        }
+    }
+
 
     void GetOutOfSpawn()
     {
@@ -653,6 +696,13 @@ public class GhostControllerInnovation : MonoBehaviour
         {
             // Move clockwise around map
             nextMove = Ghost4Behaviour();
+        }
+        else if (ghostType == 5)
+        {
+            // Move slowly randomly but if distance to player <= 12
+            // Rush towards player with a big burst of speed
+            // Which dies down quickly
+            nextMove = Ghost5Behaviour();
         }
 
         return nextMove;
@@ -768,9 +818,5 @@ public class GhostControllerInnovation : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        Debug.Log("Collision Enter: " + collision.gameObject + " : " + collision.transform.position);
-        if (collision.gameObject.CompareTag("Ant"))
-        {
-        }
     }
 }

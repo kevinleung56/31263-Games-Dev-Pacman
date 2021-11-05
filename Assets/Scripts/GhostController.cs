@@ -768,9 +768,5 @@ public class GhostController : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        Debug.Log("Collision Enter: " + collision.gameObject + " : " + collision.transform.position);
-        if (collision.gameObject.CompareTag("Ant"))
-        {
-        }
     }
 }
